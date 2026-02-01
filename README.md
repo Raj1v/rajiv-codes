@@ -28,8 +28,8 @@ curl -sL https://raw.githubusercontent.com/Raj1v/rajiv-codes/main/bootstrap.sh |
 | Tool | How |
 |------|-----|
 | Nix | bootstrap.sh |
+| oh-my-zsh | Nix |
 | chezmoi | Nix |
-| oh-my-zsh | chezmoi run_once script |
 | nvim config | chezmoi dotfiles |
 | gitconfig | chezmoi dotfiles |
 
