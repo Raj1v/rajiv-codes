@@ -1,0 +1,7 @@
+[user]
+	name = Frederik Rajiv Manichand
+	email = rajivmanichand@gmail.com
+[diff]
+	tool = code
+[difftool "code"]
+	cmd = /usr/local/bin/code --wait --diff \"$LOCAL\" \"$REMOTE\"

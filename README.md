@@ -1,6 +1,14 @@
 # Personal Monorepo
 
-A home for all Rajiv's configurations 🚀
+A home for all Rajiv's configurations.
+
+## Bootstrap
+
+Fresh machine? One command:
+
+```bash
+curl -sL https://raw.githubusercontent.com/Raj1v/rajiv-codes/main/bootstrap.sh | sh
+```
 
 ## Plans
 
@@ -8,3 +16,4 @@ A home for all Rajiv's configurations 🚀
 - [ ] Declarative configurations of tools
   - Nix Packages
   - Terminal etc
+- [ ] Add nix-darwin for Homebrew management
