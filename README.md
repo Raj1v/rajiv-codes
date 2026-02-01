@@ -33,14 +33,19 @@ curl -sL https://raw.githubusercontent.com/Raj1v/rajiv-codes/main/bootstrap.sh |
 | chezmoi | Nix |
 | nvim config | chezmoi dotfiles |
 | gitconfig | chezmoi dotfiles |
-| zshrc | chezmoi template + 1Password secrets |
+| zshrc | chezmoi dotfiles |
 
 ## Secrets
 
-Secrets are stored in 1Password. Create an item called `dotfiles-secrets` in your `Private` vault with these fields:
-- `github-token`
-- `linear-api-key`
-- `sentry-auth-token`
+Create a `~/.secrets` file (not tracked in git) with your tokens:
+
+```bash
+export GITHUB_TOKEN="your-token"
+export LINEAR_API_KEY="your-key"
+export SENTRY_AUTH_TOKEN="your-token"
+```
+
+The zshrc will source this file if it exists.
 
 ## Not managed (install via Homebrew/apt)
 

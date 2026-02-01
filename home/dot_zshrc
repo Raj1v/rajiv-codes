@@ -124,7 +124,6 @@ if [ -f '/Users/rajiv/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '
 
 # STUDYFLASH
 export INFISICAL_ENV=dev
-export GITHUB_TOKEN={{ onepasswordRead "op://Private/dotfiles-secrets/github-token" }}
 export PATH="$HOME/.slack/bin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
 alias ls='lsd'
@@ -133,6 +132,7 @@ alias o='code'
 
 eval "$(zoxide init zsh)"
 
-LINEAR_API_KEY={{ onepasswordRead "op://Private/dotfiles-secrets/linear-api-key" }}
-SENTRY_AUTH_TOKEN={{ onepasswordRead "op://Private/dotfiles-secrets/sentry-auth-token" }}
+# Source secrets from local file (not in git)
+[ -f ~/.secrets ] && source ~/.secrets
+
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
