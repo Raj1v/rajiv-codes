@@ -138,14 +138,8 @@ eval "$(zoxide init zsh)"
 # Source secrets from local file (not in git)
 [ -f ~/.secrets ] && source ~/.secrets
 
-# Chezmoi sync check on startup
-if ! chezmoi verify &>/dev/null; then
-  if gum confirm "Dotfiles out of sync. Sync now?"; then
-    chezmoi-sync
-  else
-    echo "Run 'chezmoi-sync' later to sync"
-  fi
-fi
+# Dotfiles sync check on startup
+chezmoi-sync --startup
 
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 

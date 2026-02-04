@@ -3,53 +3,140 @@
 
 set -e
 
-# Check if out of sync
-if chezmoi verify &>/dev/null; then
-    echo "✓ chezmoi is in sync"
-    exit 0
+SOURCE_DIR=$(chezmoi source-path)
+cd "$SOURCE_DIR"
+
+# Modes
+check_only=false
+startup_mode=false
+case "$1" in
+    --check) check_only=true ;;
+    --startup) startup_mode=true ;;
+esac
+
+# Track what's out of sync
+issues=()
+
+# Check chezmoi file sync
+if ! chezmoi verify &>/dev/null; then
+    issues+=("files")
 fi
 
-# Show what's out of sync
-echo "chezmoi out of sync:"
-chezmoi status 2>/dev/null | while read -r line; do
-    status="${line:0:2}"
-    file="${line:3}"
-    case "$status" in
-        "MM") echo "  ⚠️  $file (modified in both)" ;;
-        " M") echo "  📥 $file (source → home)" ;;
-        "M ") echo "  📤 $file (home → source)" ;;
-        " A") echo "  ➕ $file (new in source)" ;;
-        "A ") echo "  ➕ $file (new in home)" ;;
-        " D") echo "  🗑️  $file (deleted in source)" ;;
-        "D ") echo "  🗑️  $file (deleted in home)" ;;
-        *)    echo "  ?? $file ($status)" ;;
-    esac
-done
+# Check git status
+git fetch --quiet origin 2>/dev/null || true
+
+if [[ -n $(git status --porcelain) ]]; then
+    issues+=("dirty")
+fi
+
+local_commits=$(git rev-list --count @{u}..HEAD 2>/dev/null || echo "0")
+if [[ $local_commits -gt 0 ]]; then
+    issues+=("unpushed")
+fi
+
+remote_commits=$(git rev-list --count HEAD..@{u} 2>/dev/null || echo "0")
+if [[ $remote_commits -gt 0 ]]; then
+    issues+=("behind")
+fi
+
+# All good?
+if [[ ${#issues[@]} -eq 0 ]]; then
+    $check_only || echo "✓ dotfiles in sync"
+    exit 1  # 1 = in sync (for --check: false = no action needed)
+fi
+
+# Check mode: just report out of sync
+if $check_only; then
+    exit 0  # 0 = out of sync (for --check: true = action needed)
+fi
+
+# Startup mode: ask before showing full menu
+if $startup_mode; then
+    if ! gum confirm "Dotfiles out of sync. Sync now?"; then
+        echo "Run 'chezmoi-sync' later to sync"
+        exit 0
+    fi
+fi
+
+# Show status
+echo "Dotfiles out of sync:"
 echo ""
 
-# Offer choices
-choice=$(gum choose \
-    "Apply (source → home)" \
-    "Add (home → source)" \
-    "Diff" \
-    "Merge (open in editor)" \
-    "Skip")
+if [[ " ${issues[*]} " =~ " files " ]]; then
+    echo "📁 File changes:"
+    chezmoi status 2>/dev/null | while read -r line; do
+        status="${line:0:2}"
+        file="${line:3}"
+        case "$status" in
+            "MM") echo "   ⚠️  $file (modified in both)" ;;
+            " M") echo "   📥 $file (source → home)" ;;
+            "M ") echo "   📤 $file (home → source)" ;;
+            " A") echo "   ➕ $file (new in source)" ;;
+            "A ") echo "   ➕ $file (new in home)" ;;
+            " D") echo "   🗑️  $file (deleted in source)" ;;
+            "D ") echo "   🗑️  $file (deleted in home)" ;;
+            *)    echo "   ?? $file ($status)" ;;
+        esac
+    done
+    echo ""
+fi
+
+if [[ " ${issues[*]} " =~ " dirty " ]]; then
+    echo "📝 Uncommitted changes in repo"
+fi
+
+if [[ " ${issues[*]} " =~ " unpushed " ]]; then
+    echo "⬆️  $local_commits unpushed commit(s)"
+fi
+
+if [[ " ${issues[*]} " =~ " behind " ]]; then
+    echo "⬇️  $remote_commits commit(s) behind origin"
+fi
+
+echo ""
+
+# Build menu based on issues
+menu_items=()
+
+[[ " ${issues[*]} " =~ " files " ]] && menu_items+=("Apply files (source → home)" "Add files (home → source)")
+[[ " ${issues[*]} " =~ " dirty " ]] && menu_items+=("Commit changes")
+[[ " ${issues[*]} " =~ " unpushed " ]] && menu_items+=("Push to origin")
+[[ " ${issues[*]} " =~ " behind " ]] && menu_items+=("Pull from origin")
+menu_items+=("Diff" "Skip")
+
+choice=$(gum choose "${menu_items[@]}")
 
 case "$choice" in
-    "Apply (source → home)")
+    "Apply files (source → home)")
         chezmoi apply
         echo "✓ Applied"
+        exec "$0"
         ;;
-    "Add (home → source)")
+    "Add files (home → source)")
         chezmoi re-add
         echo "✓ Added to source"
+        exec "$0"
+        ;;
+    "Commit changes")
+        git add -A
+        msg=$(gum input --placeholder "Commit message")
+        git commit -m "$msg"
+        echo "✓ Committed"
+        exec "$0"
+        ;;
+    "Push to origin")
+        git push
+        echo "✓ Pushed"
+        exec "$0"
+        ;;
+    "Pull from origin")
+        git pull
+        echo "✓ Pulled"
+        exec "$0"
         ;;
     "Diff")
         chezmoi diff | less
-        exec "$0"  # Re-run after viewing diff
-        ;;
-    "Merge (open in editor)")
-        chezmoi merge-all
+        exec "$0"
         ;;
     "Skip")
         echo "Skipped"
