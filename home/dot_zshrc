@@ -142,3 +142,9 @@ if ! chezmoi verify &>/dev/null; then
 fi
 
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
+
+# Tmux session picker on shell start
+if [[ -z "$TMUX" && $- == *i* ]]; then
+  session=$(tmux ls -F '#{session_name}' 2>/dev/null | fzf --print-query --prompt="tmux session: " | tail -1)
+  [[ -n "$session" ]] && exec tmux new -A -s "$session"
+fi
