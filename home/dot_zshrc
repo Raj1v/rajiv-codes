@@ -135,4 +135,10 @@ eval "$(zoxide init zsh)"
 # Source secrets from local file (not in git)
 [ -f ~/.secrets ] && source ~/.secrets
 
+# Chezmoi sync check on startup
+if ! chezmoi verify &>/dev/null; then
+  echo "⚠️  chezmoi out of sync:"
+  chezmoi status 2>/dev/null | sed 's/^/   /'
+fi
+
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
