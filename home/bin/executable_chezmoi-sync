@@ -1,0 +1,57 @@
+#!/bin/zsh
+# Interactive chezmoi sync helper using gum
+
+set -e
+
+# Check if out of sync
+if chezmoi verify &>/dev/null; then
+    echo "✓ chezmoi is in sync"
+    exit 0
+fi
+
+# Show what's out of sync
+echo "chezmoi out of sync:"
+chezmoi status 2>/dev/null | while read -r line; do
+    status="${line:0:2}"
+    file="${line:3}"
+    case "$status" in
+        "MM") echo "  ⚠️  $file (modified in both)" ;;
+        " M") echo "  📥 $file (source → home)" ;;
+        "M ") echo "  📤 $file (home → source)" ;;
+        " A") echo "  ➕ $file (new in source)" ;;
+        "A ") echo "  ➕ $file (new in home)" ;;
+        " D") echo "  🗑️  $file (deleted in source)" ;;
+        "D ") echo "  🗑️  $file (deleted in home)" ;;
+        *)    echo "  ?? $file ($status)" ;;
+    esac
+done
+echo ""
+
+# Offer choices
+choice=$(gum choose \
+    "Apply (source → home)" \
+    "Add (home → source)" \
+    "Diff" \
+    "Merge (open in editor)" \
+    "Skip")
+
+case "$choice" in
+    "Apply (source → home)")
+        chezmoi apply
+        echo "✓ Applied"
+        ;;
+    "Add (home → source)")
+        chezmoi re-add
+        echo "✓ Added to source"
+        ;;
+    "Diff")
+        chezmoi diff | less
+        exec "$0"  # Re-run after viewing diff
+        ;;
+    "Merge (open in editor)")
+        chezmoi merge-all
+        ;;
+    "Skip")
+        echo "Skipped"
+        ;;
+esac

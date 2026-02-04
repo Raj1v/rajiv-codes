@@ -1,6 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
+# Add ~/bin to PATH
+export PATH="$HOME/bin:$PATH"
+
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -137,14 +140,17 @@ eval "$(zoxide init zsh)"
 
 # Chezmoi sync check on startup
 if ! chezmoi verify &>/dev/null; then
-  echo "⚠️  chezmoi out of sync:"
-  chezmoi status 2>/dev/null | sed 's/^/   /'
+  if gum confirm "Dotfiles out of sync. Sync now?"; then
+    chezmoi-sync
+  else
+    echo "Run 'chezmoi-sync' later to sync"
+  fi
 fi
 
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 
-# Tmux session picker on shell start
-if [[ -z "$TMUX" && $- == *i* ]]; then
+# Tmux session picker on shell start (skip in IDE terminals)
+if [[ -z "$TMUX" && $- == *i* && "$TERM_PROGRAM" != "vscode" ]]; then
   session=$(tmux ls -F '#{session_name}' 2>/dev/null | fzf --print-query --prompt="tmux session: " | tail -1)
   [[ -n "$session" ]] && exec tmux new -A -s "$session"
 fi
