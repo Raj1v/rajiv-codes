@@ -18,6 +18,12 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
   ln -s $(nix eval --raw nixpkgs#oh-my-zsh.outPath)/share/oh-my-zsh ~/.oh-my-zsh
 fi
 
+# Install TPM (Tmux Plugin Manager)
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+  echo "Installing TPM..."
+  git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+fi
+
 # Apply dotfiles
 echo "Applying dotfiles..."
 nix-shell -p chezmoi --run "chezmoi init --apply Raj1v/rajiv-codes"
