@@ -1,6 +1,8 @@
 [user]
 	name = Frederik Rajiv Manichand
 	email = rajivmanichand@gmail.com
+[push]
+	autoSetupRemote = true
 [diff]
 	tool = code
 [difftool "code"]
