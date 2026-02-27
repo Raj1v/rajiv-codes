@@ -65,9 +65,9 @@ echo ""
 if [[ " ${issues[*]} " =~ " files " ]]; then
     echo "📁 File changes:"
     chezmoi status 2>/dev/null | while read -r line; do
-        status="${line:0:2}"
+        st="${line:0:2}"
         file="${line:3}"
-        case "$status" in
+        case "$st" in
             "MM") echo "   ⚠️  $file (modified in both)" ;;
             " M") echo "   📥 $file (source → home)" ;;
             "M ") echo "   📤 $file (home → source)" ;;
