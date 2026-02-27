@@ -134,17 +134,23 @@ alias c='clear'
 alias o='code'
 
 eval "$(zoxide init zsh)"
+eval "$(workmux completions zsh)"
 
 # Source secrets from local file (not in git)
 [ -f ~/.secrets ] && source ~/.secrets
 
 # Dotfiles sync check on startup
-chezmoi-sync --startup
 
 export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 
 # Tmux session picker on shell start (skip in IDE terminals)
-if [[ -z "$TMUX" && $- == *i* && "$TERM_PROGRAM" != "vscode" ]]; then
+if [[ -z "$TMUX" && $- == *i* && "$TERM_PROGRAM" != "vscode" && -z "$CURSOR_AGENT" ]]; then
+  chezmoi-sync --startup
   session=$(tmux ls -F '#{session_name}' 2>/dev/null | fzf --print-query --prompt="tmux session: " | tail -1)
   [[ -n "$session" ]] && exec tmux new -A -s "$session"
 fi
+
+alias pos="productivity-os"
+alias wm="workmux"
+export PATH="$HOME/.cargo/bin:$PATH"
+export EDITOR=nvim
