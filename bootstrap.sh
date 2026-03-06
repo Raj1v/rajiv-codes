@@ -8,6 +8,14 @@ if ! command -v nix >/dev/null 2>&1; then
   . ~/.nix-profile/etc/profile.d/nix.sh
 fi
 
+# Enable nix-command and flakes
+mkdir -p ~/.config/nix
+grep -q 'experimental-features' ~/.config/nix/nix.conf 2>/dev/null || \
+  echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+
+# Source nix in current shell
+. ~/.nix-profile/etc/profile.d/nix.sh
+
 # Install packages via Nix
 echo "Installing packages..."
 nix profile install nixpkgs#oh-my-zsh
