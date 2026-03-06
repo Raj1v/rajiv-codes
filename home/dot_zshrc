@@ -1,6 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
+# Homebrew
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv 2>/dev/null || /opt/homebrew/bin/brew shellenv 2>/dev/null)"
+
 # Add ~/bin to PATH
 export PATH="$HOME/bin:$PATH"
 
@@ -128,7 +131,6 @@ if [ -f '/Users/rajiv/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '
 # STUDYFLASH
 export INFISICAL_ENV=dev
 export PATH="$HOME/.slack/bin:$PATH"
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv 2>/dev/null || /opt/homebrew/bin/brew shellenv 2>/dev/null)"
 alias ls='lsd'
 alias c='clear'
 alias o='code'
