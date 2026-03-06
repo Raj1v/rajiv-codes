@@ -24,6 +24,12 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
 
+# Set zsh as default shell
+if [ "$(basename "$SHELL")" != "zsh" ]; then
+  echo "Setting zsh as default shell..."
+  sudo chsh -s "$(which zsh)" "$(whoami)"
+fi
+
 # Apply dotfiles
 echo "Applying dotfiles..."
 chezmoi init --apply --ssh Raj1v/rajiv-codes
