@@ -11,7 +11,7 @@ xcode-select --install   # git, curl, etc.
 
 ### Linux
 ```bash
-sudo apt install git curl zsh
+sudo apt install git curl zsh unzip
 chsh -s $(which zsh)     # set zsh as default shell
 ```
 
