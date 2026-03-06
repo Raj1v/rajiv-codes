@@ -34,4 +34,4 @@ fi
 
 # Apply dotfiles
 echo "Applying dotfiles..."
-nix-shell -p chezmoi --run "chezmoi init --apply Raj1v/rajiv-codes"
+nix-shell -p chezmoi --run "chezmoi init --apply --ssh Raj1v/rajiv-codes"
