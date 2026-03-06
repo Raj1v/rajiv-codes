@@ -20,6 +20,12 @@ grep -q 'experimental-features' ~/.config/nix/nix.conf 2>/dev/null || \
 echo "Installing packages..."
 nix profile install nixpkgs#oh-my-zsh
 NIXPKGS_ALLOW_UNFREE=1 nix profile install --impure nixpkgs#_1password-cli
+nix profile install nixpkgs#chezmoi
+nix profile install nixpkgs#fzf
+nix profile install nixpkgs#zoxide
+nix profile install nixpkgs#uv
+nix profile install nixpkgs#lsd
+nix profile install github:raine/workmux
 
 # Set up oh-my-zsh symlink (Nix installs to store, need to link it)
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -34,4 +40,4 @@ fi
 
 # Apply dotfiles
 echo "Applying dotfiles..."
-nix-shell -p chezmoi --run "chezmoi init --apply --ssh Raj1v/rajiv-codes"
+chezmoi init --apply --ssh Raj1v/rajiv-codes
