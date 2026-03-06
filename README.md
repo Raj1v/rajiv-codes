@@ -27,10 +27,15 @@ curl -sL https://raw.githubusercontent.com/Raj1v/rajiv-codes/main/bootstrap.sh |
 
 | Tool | How |
 |------|-----|
-| Nix | bootstrap.sh |
-| oh-my-zsh | Nix |
-| 1Password CLI | Nix |
-| chezmoi | Nix |
+| Homebrew | bootstrap.sh |
+| oh-my-zsh | bootstrap.sh |
+| chezmoi | Homebrew |
+| 1Password CLI | Homebrew |
+| fzf | Homebrew |
+| zoxide | Homebrew |
+| uv | Homebrew |
+| lsd | Homebrew |
+| workmux | Homebrew |
 | nvim config | chezmoi dotfiles |
 | gitconfig | chezmoi dotfiles |
 | zshrc | chezmoi dotfiles |
