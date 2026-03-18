@@ -137,6 +137,7 @@ alias o='code'
 
 eval "$(zoxide init zsh)"
 eval "$(workmux completions zsh)"
+eval "$(fzf --zsh)"
 
 # Source secrets from local file (not in git)
 [ -f ~/.secrets ] && source ~/.secrets
@@ -147,7 +148,17 @@ export PATH="/opt/homebrew/opt/openssh/bin:$PATH"
 
 # Tmux session picker on shell start (skip in IDE terminals)
 if [[ -z "$TMUX" && $- == *i* && "$TERM_PROGRAM" != "vscode" && -z "$CURSOR_AGENT" ]]; then
-  chezmoi-sync --startup
+  # Read dotfiles sync status from daemon cache (instant, no network calls)
+  if [[ -f "$HOME/.cache/chezmoi-sync/status" ]]; then
+    source "$HOME/.cache/chezmoi-sync/status"
+    if [[ "$STATUS" = "drift" ]]; then
+      echo "⚠ Dotfiles out of sync: $DETAILS"
+      echo "  Run 'chezmoi-sync' to resolve"
+      echo ""
+    fi
+    unset TIMESTAMP STATUS DETAILS
+  fi
+
   session=$(tmux ls -F '#{session_name}' 2>/dev/null | fzf --print-query --prompt="tmux session: " | tail -1)
   [[ -n "$session" ]] && exec tmux new -A -s "$session"
 fi
