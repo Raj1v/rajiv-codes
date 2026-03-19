@@ -41,6 +41,12 @@ if ! command -v deno >/dev/null 2>&1; then
   curl -fsSL https://deno.land/install.sh | sh
 fi
 
+# Install fzf-tab oh-my-zsh plugin
+if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fzf-tab" ]; then
+  echo "Installing fzf-tab..."
+  git clone https://github.com/Aloxaf/fzf-tab "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fzf-tab"
+fi
+
 # Set zsh as default shell
 if [ "$(basename "$SHELL")" != "zsh" ]; then
   echo "Setting zsh as default shell..."
