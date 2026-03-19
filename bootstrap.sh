@@ -24,6 +24,23 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
 
+# Install nvm and Node.js
+if [ ! -d "$HOME/.nvm" ]; then
+  echo "Installing nvm..."
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+fi
+export NVM_DIR="$HOME/.nvm"
+. "$NVM_DIR/nvm.sh"
+echo "Installing Node.js..."
+nvm install 24
+corepack enable pnpm
+
+# Install Deno
+if ! command -v deno >/dev/null 2>&1; then
+  echo "Installing Deno..."
+  curl -fsSL https://deno.land/install.sh | sh
+fi
+
 # Set zsh as default shell
 if [ "$(basename "$SHELL")" != "zsh" ]; then
   echo "Setting zsh as default shell..."
