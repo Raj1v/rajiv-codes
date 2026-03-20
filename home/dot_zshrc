@@ -165,5 +165,6 @@ fi
 
 alias pos="productivity-os"
 alias wm="workmux"
+alias ts="tmux switch-client -t"
 export PATH="$HOME/.cargo/bin:$PATH"
 export EDITOR=nvim
