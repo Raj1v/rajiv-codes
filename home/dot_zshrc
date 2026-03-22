@@ -139,6 +139,21 @@ eval "$(zoxide init zsh)"
 eval "$(workmux completions zsh)"
 eval "$(fzf --zsh)"
 
+# Sesh session picker (Alt+s, works outside tmux)
+function sesh-sessions() {
+  {
+    exec </dev/tty
+    exec <&1
+    local session
+    session=$(sesh list -t -c | fzf --height 40% --reverse --border-label ' sesh ' --border --prompt '⚡ ')
+    zle reset-prompt > /dev/null 2>&1 || true
+    [[ -z "$session" ]] && return
+    sesh connect $session
+  }
+}
+zle -N sesh-sessions
+bindkey '\es' sesh-sessions
+
 # Source secrets from local file (not in git)
 [ -f ~/.secrets ] && source ~/.secrets
 
@@ -159,8 +174,8 @@ if [[ -z "$TMUX" && $- == *i* && "$TERM_PROGRAM" != "vscode" && -z "$CURSOR_AGEN
     unset TIMESTAMP STATUS DETAILS
   fi
 
-  session=$(tmux ls -F '#{session_name}' 2>/dev/null | fzf --print-query --prompt="tmux session: " | tail -1)
-  [[ -n "$session" ]] && exec tmux new -A -s "$session"
+  session=$(sesh list | fzf --prompt="⚡ ")
+  [[ -n "$session" ]] && exec sesh connect "$session"
 fi
 
 alias pos="productivity-os"
