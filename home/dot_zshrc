@@ -137,6 +137,7 @@ alias o='code'
 
 eval "$(zoxide init zsh)"
 eval "$(workmux completions zsh)"
+eval "$(eas autocomplete:script zsh)"
 eval "$(fzf --zsh)"
 
 # Sesh session picker (Alt+s, works outside tmux)
