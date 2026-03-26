@@ -182,5 +182,7 @@ fi
 alias pos="productivity-os"
 alias wm="workmux"
 alias ts="tmux switch-client -t"
+alias cc="claude"
+function qq() { llm -m claude-haiku-4.5 "$*"; }
 export PATH="$HOME/.cargo/bin:$PATH"
 export EDITOR=nvim
