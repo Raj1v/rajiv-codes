@@ -183,6 +183,15 @@ alias pos="productivity-os"
 alias wm="workmux"
 alias ts="tmux switch-client -t"
 alias cc="claude"
+
+# Override bare `git` to launch lazygit
+git() {
+  if [[ $# -eq 0 ]]; then
+    lazygit
+  else
+    command git "$@"
+  fi
+}
 function qq() { llm -m claude-haiku-4.5 "$*"; }
 export PATH="$HOME/.cargo/bin:$PATH"
 export EDITOR=nvim
