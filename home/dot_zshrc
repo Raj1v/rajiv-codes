@@ -131,7 +131,15 @@ if [ -f '/Users/rajiv/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '
 # STUDYFLASH
 export INFISICAL_ENV=dev
 export PATH="$HOME/.slack/bin:$PATH"
-alias ls='lsd'
+unalias ls 2>/dev/null
+ls() {
+  if [[ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" == "Dark" ]]; then
+    ln -sf ~/.config/lsd/colors-mocha.yaml ~/.config/lsd/colors.yaml
+  else
+    ln -sf ~/.config/lsd/colors-latte.yaml ~/.config/lsd/colors.yaml
+  fi
+  command lsd "$@"
+}
 alias c='clear'
 alias o='code'
 
@@ -195,3 +203,5 @@ git() {
 function qq() { llm -m claude-haiku-4.5 "$*"; }
 export PATH="$HOME/.cargo/bin:$PATH"
 export EDITOR=nvim
+
+EAS_AC_ZSH_SETUP_PATH=/Users/rajiv/Library/Caches/eas-cli/autocomplete/zsh_setup && test -f $EAS_AC_ZSH_SETUP_PATH && source $EAS_AC_ZSH_SETUP_PATH; # eas autocomplete setup
