@@ -12,11 +12,17 @@ return {
   -- add gruvbox
   { "ellisonleao/gruvbox.nvim" },
 
-  -- Configure LazyVim to load gruvbox
+  -- Colorscheme: auto-switch tokyonight based on terminal background
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "gruvbox",
+      colorscheme = function()
+        if vim.o.background == "light" then
+          vim.cmd.colorscheme("tokyonight-day")
+        else
+          vim.cmd.colorscheme("tokyonight-moon")
+        end
+      end,
     },
   },
 
