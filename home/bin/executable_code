@@ -1,0 +1,18 @@
+#!/bin/bash
+# Open folder in local Cursor via WezTerm openurl (remote machines only)
+if [[ -z "$SSH_CONNECTION" ]]; then
+  echo "Not in an SSH session — use 'cursor' or 'code' directly" >&2
+  exit 1
+fi
+
+target="${1:-.}"
+path="$(cd "$target" 2>/dev/null && pwd || realpath "$target")"
+host="${LC_SSH_HOST:-$(hostname)}"
+url="cursor://vscode-remote/ssh-remote+${host}${path}"
+encoded=$(echo -n "$url" | base64)
+
+if [[ -n "$TMUX" ]]; then
+  printf "\ePtmux;\e\e]1337;SetUserVar=openurl=%s\a\e\\\\" "$encoded"
+else
+  printf "\e]1337;SetUserVar=openurl=%s\a" "$encoded"
+fi

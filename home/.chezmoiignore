@@ -1,3 +1,7 @@
 {{- if ne .chezmoi.os "darwin" }}
 Library/
 {{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+bin/code
+bin/notify-send
+{{- end }}
