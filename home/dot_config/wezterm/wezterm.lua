@@ -1,5 +1,12 @@
 local wezterm = require("wezterm")
 
+-- Open URLs sent from remote machines via OSC 1337 SetUserVar=openurl=<url>
+wezterm.on("user-var-changed", function(window, pane, name, value)
+	if name == "openurl" then
+		wezterm.run_child_process({ "open", value })
+	end
+end)
+
 local function scheme_for_appearance(appearance)
 	if appearance:find("Dark") then
 		return "Catppuccin Mocha"
