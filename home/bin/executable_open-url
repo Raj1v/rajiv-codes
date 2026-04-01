@@ -7,8 +7,8 @@ if hash open &>/dev/null; then
 else
     encoded=$(printf '%s' "$url" | base64)
     if [ -n "$TMUX" ]; then
-        printf '\033Ptmux;\033\033]52;c;%s\a\033\\' "$encoded"
+        printf '\033Ptmux;\033\033]52;c;%s\a\033\\' "$encoded" > /dev/tty
     else
-        printf '\033]52;c;%s\a' "$encoded"
+        printf '\033]52;c;%s\a' "$encoded" > /dev/tty
     fi
 fi
