@@ -8,9 +8,14 @@ if hash open &>/dev/null; then
     nohup open "$url" &>/dev/null
 else
     encoded=$(printf '%s' "$url" | base64 | tr -d '\n')
+    # Resolve output target: /dev/tty if available, otherwise the tmux pane's tty
+    tty_target="/dev/tty"
+    if [ ! -w "$tty_target" ] && [ -n "$TMUX" ]; then
+        tty_target=$(tmux display-message -p '#{pane_tty}')
+    fi
     if [ -n "$TMUX" ]; then
-        printf '\033Ptmux;\033\033]1337;SetUserVar=openurl=%s\a\033\\' "$encoded" > /dev/tty
+        printf '\033Ptmux;\033\033]1337;SetUserVar=openurl=%s\a\033\\' "$encoded" > "$tty_target"
     else
-        printf '\033]1337;SetUserVar=openurl=%s\a' "$encoded" > /dev/tty
+        printf '\033]1337;SetUserVar=openurl=%s\a' "$encoded" > "$tty_target"
     fi
 fi
