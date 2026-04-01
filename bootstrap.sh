@@ -43,6 +43,12 @@ if ! command -v deno >/dev/null 2>&1; then
   curl -fsSL https://deno.land/install.sh | sh
 fi
 
+# Install Claude Code
+if ! command -v claude >/dev/null 2>&1; then
+  echo "Installing Claude Code..."
+  curl -fsSL https://claude.ai/install.sh | sh
+fi
+
 # Install fzf-tab oh-my-zsh plugin
 if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fzf-tab" ]; then
   echo "Installing fzf-tab..."
