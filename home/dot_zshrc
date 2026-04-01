@@ -1,6 +1,15 @@
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
+# Propagate macOS appearance via LC_THEME (forwarded by SSH automatically)
+if [[ "$OSTYPE" == darwin* ]]; then
+  if [[ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" == "Dark" ]]; then
+    export LC_THEME=dark
+  else
+    export LC_THEME=light
+  fi
+fi
+
 # Homebrew
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv 2>/dev/null || /opt/homebrew/bin/brew shellenv 2>/dev/null)"
 
@@ -197,6 +206,18 @@ alias pos="productivity-os"
 alias wm="workmux"
 alias ts="tmux switch-client -t"
 alias cc="claude"
+
+# Report running command to WezTerm tab title via user vars
+if [[ -n "$WEZTERM_EXECUTABLE" ]]; then
+  __wezterm_set_user_var() {
+    printf "\033]1337;SetUserVar=%s=%s\007" "$1" "$(echo -n "$2" | base64)"
+  }
+  __wezterm_preexec() { __wezterm_set_user_var wezprocess "${1%% *}"; }
+  __wezterm_precmd() { __wezterm_set_user_var wezprocess "zsh"; }
+  autoload -Uz add-zsh-hook
+  add-zsh-hook preexec __wezterm_preexec
+  add-zsh-hook precmd __wezterm_precmd
+fi
 
 # Override bare `git` to launch lazygit
 git() {
