@@ -7,6 +7,22 @@ wezterm.on("user-var-changed", function(window, pane, name, value)
 	end
 end)
 
+wezterm.on("format-tab-title", function(tab)
+	local pane = tab.active_pane
+	local process = pane.foreground_process_name:match("([^/]+)$") or ""
+	local machine = "local"
+
+	if process == "ssh" then
+		local title = pane.title or ""
+		machine = title:match("@([%w._-]+)") or title:match("^([%w._-]+)") or "remote"
+		local uv = pane.user_vars or {}
+		process = uv.wezprocess or "ssh"
+	end
+
+	return string.format(" (%s) %s ", machine, process)
+end)
+
+
 local function scheme_for_appearance(appearance)
 	if appearance:find("Dark") then
 		return "Catppuccin Mocha"
@@ -40,6 +56,21 @@ return {
 			key = "w",
 			mods = "CMD",
 			action = wezterm.action.CloseCurrentTab({ confirm = false }),
+		},
+		{
+			key = "f",
+			mods = "CMD",
+			action = wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
+		},
+		{
+			key = "[",
+			mods = "CMD",
+			action = wezterm.action.SendKey({ key = "p", mods = "ALT" }),
+		},
+		{
+			key = "]",
+			mods = "CMD",
+			action = wezterm.action.SendKey({ key = "n", mods = "ALT" }),
 		},
 	},
 }
