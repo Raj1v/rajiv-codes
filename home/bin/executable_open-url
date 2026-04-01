@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Open a URL locally if possible, otherwise copy it to the local clipboard via
+# OSC 52 (requires tmux allow-passthrough and a terminal supporting OSC 52, e.g. WezTerm).
+url="$1"
+if hash open &>/dev/null; then
+    nohup open "$url" &>/dev/null
+else
+    encoded=$(printf '%s' "$url" | base64)
+    if [ -n "$TMUX" ]; then
+        printf '\033Ptmux;\033\033]52;c;%s\a\033\\' "$encoded"
+    else
+        printf '\033]52;c;%s\a' "$encoded"
+    fi
+fi

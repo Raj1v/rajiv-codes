@@ -11,7 +11,7 @@ end
 return {
 	font = wezterm.font_with_fallback({ "Hack Nerd Font", "Apple Color Emoji" }),
 	font_size = 18.0,
-	enable_tab_bar = false,
+	hide_tab_bar_if_only_one_tab = true,
 	window_decorations = "RESIZE",
 	color_scheme = scheme_for_appearance(wezterm.gui.get_appearance()),
 	window_close_confirmation = "NeverPrompt",
@@ -20,6 +20,13 @@ return {
 		right = 8,
 		top = 0,
 		bottom = 0,
+	},
+	mouse_bindings = {
+		{
+			event = { Up = { streak = 1, button = "Left" } },
+			mods = "SUPER",
+			action = wezterm.action.OpenLinkAtMouseCursor,
+		},
 	},
 	keys = {
 		{
