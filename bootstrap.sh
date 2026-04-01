@@ -10,7 +10,8 @@ fi
 
 # Install packages
 echo "Installing packages..."
-brew install chezmoi fzf zoxide uv lsd raine/workmux/workmux 1password-cli sesh gum
+brew tap infisical/get-cli
+brew install chezmoi fzf zoxide uv lsd raine/workmux/workmux 1password-cli sesh gum gh infisical
 
 # Install oh-my-zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
