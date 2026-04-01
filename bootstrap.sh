@@ -38,7 +38,7 @@ corepack enable pnpm
 pnpm add -g eas-cli
 
 # Install Deno
-if ! command -v deno >/dev/null 2>&1; then
+if ! command -v deno >/dev/null 2>&1 && [ ! -f "$HOME/.deno/bin/deno" ]; then
   echo "Installing Deno..."
   curl -fsSL https://deno.land/install.sh | sh
 fi
