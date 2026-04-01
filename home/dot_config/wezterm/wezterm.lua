@@ -7,6 +7,8 @@ wezterm.on("user-var-changed", function(window, pane, name, value)
 	end
 end)
 
+-- Tab title: show (machine) process — machine is "local" or the SSH hostname.
+-- Remote process name comes from the wezprocess user var set by the zshrc hook.
 wezterm.on("format-tab-title", function(tab)
 	local pane = tab.active_pane
 	local process = pane.foreground_process_name:match("([^/]+)$") or ""
@@ -44,33 +46,25 @@ return {
 		top = 0,
 		bottom = 0,
 	},
+	-- Intercept CMD+click locally instead of forwarding to tmux (fixes link clicking with mouse mode on)
+	bypass_mouse_reporting_modifiers = "SUPER",
 	mouse_bindings = {
 		{
+			-- CompleteSelectionOrOpenLinkAtMouseCursor handles the case where a tiny
+			-- drag selection started — it finishes the selection and still opens the link.
 			event = { Up = { streak = 1, button = "Left" } },
 			mods = "SUPER",
-			action = wezterm.action.OpenLinkAtMouseCursor,
+			action = wezterm.action.Multiple({
+				wezterm.action.CompleteSelectionOrOpenLinkAtMouseCursor("ClipboardAndPrimarySelection"),
+			}),
 		},
 	},
 	keys = {
-		{
-			key = "w",
-			mods = "CMD",
-			action = wezterm.action.CloseCurrentTab({ confirm = false }),
-		},
-		{
-			key = "f",
-			mods = "CMD",
-			action = wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
-		},
-		{
-			key = "[",
-			mods = "CMD",
-			action = wezterm.action.SendKey({ key = "p", mods = "ALT" }),
-		},
-		{
-			key = "]",
-			mods = "CMD",
-			action = wezterm.action.SendKey({ key = "n", mods = "ALT" }),
-		},
+		{ key = "w", mods = "CMD", action = wezterm.action.CloseCurrentTab({ confirm = false }) },
+		-- CMD+F → tmux prefix (Ctrl+F)
+		{ key = "f", mods = "CMD", action = wezterm.action.SendKey({ key = "f", mods = "CTRL" }) },
+		-- CMD+[/] → cycle tmux panes (mapped to Alt+p/n in tmux.conf)
+		{ key = "[", mods = "CMD", action = wezterm.action.SendKey({ key = "p", mods = "ALT" }) },
+		{ key = "]", mods = "CMD", action = wezterm.action.SendKey({ key = "n", mods = "ALT" }) },
 	},
 }
