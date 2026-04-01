@@ -1,6 +1,11 @@
+local dir = vim.fn.expand("~/repos/linear-nvim")
+if vim.fn.isdirectory(dir) == 0 then
+  return {}
+end
+
 return {
   "rmanocha/linear-nvim",
-  dir = "~/repos/linear-nvim",
+  dir = dir,
   dependencies = {
     "nvim-lua/plenary.nvim",
     "nvim-telescope/telescope.nvim",
