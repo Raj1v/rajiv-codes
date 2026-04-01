@@ -35,6 +35,7 @@ export NVM_DIR="$HOME/.nvm"
 echo "Installing Node.js..."
 nvm install 24
 corepack enable pnpm
+pnpm add -g eas-cli
 
 # Install Deno
 if ! command -v deno >/dev/null 2>&1; then
