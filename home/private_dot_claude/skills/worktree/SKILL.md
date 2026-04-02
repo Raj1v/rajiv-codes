@@ -61,12 +61,13 @@ handles that.
 
 ## Flags
 
-**`--pr`**: When passed, add instruction to open a pull request when done and
-monitor CI. Append to the prompt:
+**`--pr`**: When passed, add instruction to open a pull request when done,
+monitor CI, and poll for review comments. Append to the prompt:
 
 ```
 When you are done, commit your changes and open a pull request using `gh pr create`.
 After opening the PR, use `/loop 5m check PR CI status with gh pr checks. If any checks failed, investigate the failure, fix it, and push again.`
+Then use `/loop 20m check for PR reviews from Rajiv using gh pr reviews and gh pr view --comments. If there are new review comments from Rajiv that have not been addressed yet, address each comment: make the requested changes, commit, and push. After addressing all comments, leave a reply on each resolved comment thread confirming the fix.`
 ```
 
 **`--branch`**: When passed, the worktree branches off the current branch
