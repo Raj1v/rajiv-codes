@@ -66,5 +66,25 @@ return {
 		-- CMD+[/] → cycle tmux panes (mapped to Alt+p/n in tmux.conf)
 		{ key = "[", mods = "CMD", action = wezterm.action.SendKey({ key = "p", mods = "ALT" }) },
 		{ key = "]", mods = "CMD", action = wezterm.action.SendKey({ key = "n", mods = "ALT" }) },
+		-- CMD+HJKL / CMD+Arrows → vim-style tmux pane switching (mapped to Alt+hjkl in tmux.conf)
+		{ key = "h", mods = "CMD", action = wezterm.action.SendKey({ key = "h", mods = "ALT" }) },
+		{ key = "j", mods = "CMD", action = wezterm.action.SendKey({ key = "j", mods = "ALT" }) },
+		{ key = "k", mods = "CMD", action = wezterm.action.SendKey({ key = "k", mods = "ALT" }) },
+		{ key = "l", mods = "CMD", action = wezterm.action.SendKey({ key = "l", mods = "ALT" }) },
+		{ key = "LeftArrow", mods = "CMD", action = wezterm.action.SendKey({ key = "h", mods = "ALT" }) },
+		{ key = "DownArrow", mods = "CMD", action = wezterm.action.SendKey({ key = "j", mods = "ALT" }) },
+		{ key = "UpArrow", mods = "CMD", action = wezterm.action.SendKey({ key = "k", mods = "ALT" }) },
+		{ key = "RightArrow", mods = "CMD", action = wezterm.action.SendKey({ key = "l", mods = "ALT" }) },
+		-- CMD+P → tmux prefix (Ctrl+F) then Shift+K (sesh connect)
+		{
+			key = "p",
+			mods = "CMD",
+			action = wezterm.action.Multiple({
+				wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
+				wezterm.action.SendKey({ key = "K", mods = "SHIFT" }),
+			}),
+		},
+		-- ALT+S → send raw ESC+s (not macOS ß) for sesh zsh widget
+		{ key = "s", mods = "ALT", action = wezterm.action.SendKey({ key = "s", mods = "ALT" }) },
 	},
 }

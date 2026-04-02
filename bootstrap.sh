@@ -11,7 +11,7 @@ fi
 # Install packages
 echo "Installing packages..."
 brew tap infisical/get-cli
-brew install chezmoi fzf zoxide uv lsd raine/workmux/workmux 1password-cli sesh gum gh infisical neovim lazygit
+brew install chezmoi fzf zoxide uv lsd raine/workmux/workmux 1password-cli sesh gum gh infisical neovim lazygit supabase/tap/supabase
 
 # Install oh-my-zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
