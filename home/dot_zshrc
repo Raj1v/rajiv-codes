@@ -202,6 +202,11 @@ if [[ -z "$TMUX" && $- == *i* && "$TERM_PROGRAM" != "vscode" && -z "$CURSOR_AGEN
   [[ -n "$session" ]] && exec sesh connect "$session"
 fi
 
+# macOS-only: mount remote filesystems via sshfs
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias mnt-sexy="mkdir -p ~/mnt/sexy-mf && sshfs sexy-mf:/home/sexy-mf ~/mnt/sexy-mf"
+fi
+
 alias pos="productivity-os"
 alias wm="workmux"
 alias ts="tmux switch-client -t"
@@ -230,5 +235,3 @@ git() {
 function qq() { llm -m claude-haiku-4.5 "$*"; }
 export PATH="$HOME/.cargo/bin:$PATH"
 export EDITOR=nvim
-
-EAS_AC_ZSH_SETUP_PATH=/Users/rajiv/Library/Caches/eas-cli/autocomplete/zsh_setup && test -f $EAS_AC_ZSH_SETUP_PATH && source $EAS_AC_ZSH_SETUP_PATH; # eas autocomplete setup
