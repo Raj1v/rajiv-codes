@@ -6,7 +6,6 @@ packages:
     - uv
     - lsd
     - raine/workmux/workmux
-    - 1password/tap/1password-cli
     - sesh
     - gum
     - gh
@@ -15,3 +14,5 @@ packages:
     - lazygit
     - supabase
     - deno
+  casks:
+    - 1password-cli

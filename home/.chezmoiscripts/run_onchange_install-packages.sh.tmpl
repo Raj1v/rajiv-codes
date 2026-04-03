@@ -14,6 +14,11 @@ brew bundle --file=/dev/stdin <<EOF
 {{ range .packages.brews -}}
 brew {{ . | quote }}
 {{ end -}}
+{{ if eq .chezmoi.os "darwin" -}}
+{{ range .packages.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+{{ end -}}
 EOF
 
 # Install oh-my-zsh
