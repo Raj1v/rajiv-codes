@@ -10,7 +10,7 @@ fi
 
 # Install brew packages
 # packages.yaml hash: {{ include ".chezmoidata/packages.yaml" | sha256sum }}
-brew bundle --no-lock --file=/dev/stdin <<EOF
+brew bundle --file=/dev/stdin <<EOF
 {{ range .packages.brews -}}
 brew {{ . | quote }}
 {{ end -}}
