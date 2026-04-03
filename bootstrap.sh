@@ -8,76 +8,12 @@ if ! command -v brew >/dev/null 2>&1; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv 2>/dev/null || /opt/homebrew/bin/brew shellenv)"
 fi
 
-# Install packages
-echo "Installing packages..."
-brew tap infisical/get-cli
-brew install chezmoi fzf zoxide uv lsd raine/workmux/workmux 1password-cli sesh gum gh infisical neovim lazygit supabase/tap/supabase
-
-# Install oh-my-zsh
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-  echo "Installing oh-my-zsh..."
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+# Install chezmoi if not present
+if ! command -v chezmoi >/dev/null 2>&1; then
+  echo "Installing chezmoi..."
+  brew install chezmoi
 fi
 
-# Install TPM (Tmux Plugin Manager)
-if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
-  echo "Installing TPM..."
-  git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-fi
-
-# Install nvm and Node.js
-if [ ! -d "$HOME/.nvm" ]; then
-  echo "Installing nvm..."
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
-fi
-export NVM_DIR="$HOME/.nvm"
-. "$NVM_DIR/nvm.sh"
-echo "Installing Node.js..."
-nvm install 24
-corepack enable pnpm
-pnpm add -g eas-cli
-
-# Install Deno
-if ! command -v deno >/dev/null 2>&1 && [ ! -f "$HOME/.deno/bin/deno" ]; then
-  echo "Installing Deno..."
-  curl -fsSL https://deno.land/install.sh | sh
-fi
-
-# Install Claude Code
-if ! command -v claude >/dev/null 2>&1; then
-  echo "Installing Claude Code..."
-  curl -fsSL https://claude.ai/install.sh | bash
-fi
-
-# Install Productivity OS
-if ! command -v productivity-os >/dev/null 2>&1; then
-  echo "Installing Productivity OS..."
-  case "$(uname -s)-$(uname -m)" in
-    Darwin-arm64) asset="productivity-os-macos-aarch64.tar.gz" ;;
-    Linux-x86_64) asset="productivity-os-linux-x86_64.tar.gz" ;;
-    *) echo "Unsupported platform for productivity-os"; asset="" ;;
-  esac
-  if [ -n "$asset" ]; then
-    tmpdir=$(mktemp -d)
-    gh release download --repo Raj1v/productivity-os --pattern "$asset" --dir "$tmpdir"
-    tar -xzf "$tmpdir/$asset" -C "$tmpdir"
-    install "$tmpdir/productivity-os" /usr/local/bin/productivity-os
-    rm -rf "$tmpdir"
-  fi
-fi
-
-# Install fzf-tab oh-my-zsh plugin
-if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fzf-tab" ]; then
-  echo "Installing fzf-tab..."
-  git clone https://github.com/Aloxaf/fzf-tab "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fzf-tab"
-fi
-
-# Set zsh as default shell
-if [ "$(basename "$SHELL")" != "zsh" ]; then
-  echo "Setting zsh as default shell..."
-  sudo chsh -s "$(which zsh)" "$(whoami)"
-fi
-
-# Apply dotfiles
+# Apply dotfiles (triggers run_onchange scripts to install everything else)
 echo "Applying dotfiles..."
 chezmoi init --apply --ssh Raj1v/rajiv-codes
