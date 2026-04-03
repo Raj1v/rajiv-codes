@@ -1,0 +1,17 @@
+packages:
+  brews:
+    - chezmoi
+    - fzf
+    - zoxide
+    - uv
+    - lsd
+    - raine/workmux/workmux
+    - 1password-cli
+    - sesh
+    - gum
+    - gh
+    - infisical/get-cli/infisical
+    - neovim
+    - lazygit
+    - supabase/tap/supabase
+    - deno
