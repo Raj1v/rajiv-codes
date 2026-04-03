@@ -34,6 +34,8 @@ local function scheme_for_appearance(appearance)
 end
 
 return {
+	initial_cols = 120,
+	initial_rows = 36,
 	font = wezterm.font_with_fallback({ "Hack Nerd Font", "Apple Color Emoji" }),
 	font_size = 18.0,
 	hide_tab_bar_if_only_one_tab = true,
