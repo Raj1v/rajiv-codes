@@ -84,6 +84,15 @@ return {
 				wezterm.action.SendKey({ key = "K", mods = "SHIFT" }),
 			}),
 		},
+		-- CMD+SHIFT+T → new tmux window (prefix + c)
+		{
+			key = "t",
+			mods = "CMD|SHIFT",
+			action = wezterm.action.Multiple({
+				wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
+				wezterm.action.SendKey({ key = "c" }),
+			}),
+		},
 		-- ALT+S → send raw ESC+s (not macOS ß) for sesh zsh widget
 		{ key = "s", mods = "ALT", action = wezterm.action.SendKey({ key = "s", mods = "ALT" }) },
 	},
