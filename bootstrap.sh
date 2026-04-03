@@ -49,6 +49,23 @@ if ! command -v claude >/dev/null 2>&1; then
   curl -fsSL https://claude.ai/install.sh | bash
 fi
 
+# Install Productivity OS
+if ! command -v productivity-os >/dev/null 2>&1; then
+  echo "Installing Productivity OS..."
+  case "$(uname -s)-$(uname -m)" in
+    Darwin-arm64) asset="productivity-os-macos-aarch64.tar.gz" ;;
+    Linux-x86_64) asset="productivity-os-linux-x86_64.tar.gz" ;;
+    *) echo "Unsupported platform for productivity-os"; asset="" ;;
+  esac
+  if [ -n "$asset" ]; then
+    tmpdir=$(mktemp -d)
+    gh release download --repo Raj1v/productivity-os --pattern "$asset" --dir "$tmpdir"
+    tar -xzf "$tmpdir/$asset" -C "$tmpdir"
+    install "$tmpdir/productivity-os" /usr/local/bin/productivity-os
+    rm -rf "$tmpdir"
+  fi
+fi
+
 # Install fzf-tab oh-my-zsh plugin
 if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fzf-tab" ]; then
   echo "Installing fzf-tab..."
