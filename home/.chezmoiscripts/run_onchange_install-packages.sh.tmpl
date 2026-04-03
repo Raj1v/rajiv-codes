@@ -62,7 +62,8 @@ if ! command -v productivity-os >/dev/null 2>&1; then
     tmpdir=$(mktemp -d)
     gh release download --repo Raj1v/productivity-os --pattern "$asset" --dir "$tmpdir"
     tar -xzf "$tmpdir/$asset" -C "$tmpdir"
-    install "$tmpdir/productivity-os" /usr/local/bin/productivity-os
+    mkdir -p "$HOME/.local/bin"
+    install "$tmpdir/productivity-os" "$HOME/.local/bin/productivity-os"
     rm -rf "$tmpdir"
   fi
 fi
