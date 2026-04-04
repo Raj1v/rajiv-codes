@@ -1,5 +1,6 @@
 packages:
   brews:
+    - bash
     - chezmoi
     - fzf
     - zoxide
@@ -14,5 +15,47 @@ packages:
     - lazygit
     - supabase
     - deno
+    - fd
+    - ripgrep
+    - commitizen
+    - ffmpeg
+    - git-lfs
+    - glow
+    - go
+    - gu1llaum-3/sshm/sshm
+    - hcloud
+    - just
+    - lefthook
+    - llm
+    - ollama
+    - pandoc
+    - rust
+    - tmux
+    - watchman
+    - yq
   casks:
     - 1password-cli
+    - font-hack-nerd-font
+    - wezterm
+    - bruno
+    - caffeine
+    - claude
+    - cursor
+    - excalidrawz
+    - figma
+    - google-chrome
+    - homerow
+    - linear-linear
+    - logitech-options
+    - notion
+    - notion-mail
+    - orbstack
+    - raycast
+    - shottr
+    - slack
+    - spotify
+    - stats
+    - tailscale
+    - visual-studio-code
+    - whatsapp
+    - zoom

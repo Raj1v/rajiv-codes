@@ -155,7 +155,14 @@ ls() {
   fi
   command lsd "$@"
 }
-alias c='clear'
+c() {
+  if [[ "$1" == "--danger" ]]; then
+    shift
+    command claude --dangerously-skip-permissions "$@"
+  else
+    command claude "$@"
+  fi
+}
 alias o='code'
 
 eval "$(zoxide init zsh)"

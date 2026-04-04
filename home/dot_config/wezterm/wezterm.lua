@@ -95,6 +95,15 @@ return {
 				wezterm.action.SendKey({ key = "c" }),
 			}),
 		},
+		-- CMD+N → new named tmux session (prefix + N)
+		{
+			key = "n",
+			mods = "CMD",
+			action = wezterm.action.Multiple({
+				wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
+				wezterm.action.SendKey({ key = "N", mods = "SHIFT" }),
+			}),
+		},
 		-- ALT+S → send raw ESC+s (not macOS ß) for sesh zsh widget
 		{ key = "s", mods = "ALT", action = wezterm.action.SendKey({ key = "s", mods = "ALT" }) },
 	},
