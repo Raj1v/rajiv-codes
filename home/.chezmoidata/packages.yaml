@@ -39,6 +39,7 @@ packages:
     - wezterm
     - bruno
     - caffeine
+    - charmstone
     - claude
     - cursor
     - excalidrawz

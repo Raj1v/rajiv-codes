@@ -55,5 +55,25 @@
   },
   "effortLevel": "high",
   "voiceEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "mcpServers": {
+    "tmux": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "tmux-mcp", "--shell-type=zsh"],
+      "env": {}
+    },
+    "metabase": {
+      "command": "npx",
+      "args": ["-y", "@cognitionai/metabase-mcp-server", "--all"],
+      "env": {
+        "METABASE_URL": "https://metabase.studyflash.ch/",
+        "METABASE_API_KEY": "{{ env "METABASE_API_KEY" }}"
+      }
+    },
+    "automation": {
+      "type": "http",
+      "url": "https://automation.studyflash.ch/mcp-server/http"
+    }
+  }
 }
