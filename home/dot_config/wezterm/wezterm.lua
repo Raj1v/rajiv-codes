@@ -104,6 +104,15 @@ return {
 				wezterm.action.SendKey({ key = "N", mods = "SHIFT" }),
 			}),
 		},
+		-- CMD+M → tmux zoom pane (prefix + z)
+		{
+			key = "m",
+			mods = "CMD",
+			action = wezterm.action.Multiple({
+				wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
+				wezterm.action.SendKey({ key = "z" }),
+			}),
+		},
 		-- ALT+S → send raw ESC+s (not macOS ß) for sesh zsh widget
 		{ key = "s", mods = "ALT", action = wezterm.action.SendKey({ key = "s", mods = "ALT" }) },
 	},

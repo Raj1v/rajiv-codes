@@ -7,3 +7,12 @@ path = "~/repos/rajiv-codes"
 name = "TODO / Productivity OS"
 path = "~"
 startup_command = "pos"
+
+[[session]]
+name = "Studyflash Monorepo"
+path = "~/repos/studyflash_monorepo/"
+
+
+[[window]]
+name = "git"
+startup_script = "git"
