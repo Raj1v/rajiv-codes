@@ -1,0 +1,53 @@
+#!/bin/bash
+# Configure user-scope MCP servers in ~/.claude.json
+# chezmoi re-runs this whenever the script content changes (new MCP added/removed).
+# Secrets are read from environment variables (sourced from ~/.secrets).
+
+set -euo pipefail
+
+CLAUDE_JSON="${HOME}/.claude.json"
+
+# Source secrets
+if [ -f "${HOME}/.secrets" ]; then
+  source "${HOME}/.secrets"
+fi
+
+# MCP servers to ensure are present
+MCP_SERVERS=$(cat <<'MCPEOF'
+{
+  "tmux": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "tmux-mcp", "--shell-type=zsh"],
+    "env": {}
+  },
+  "metabase": {
+    "command": "npx",
+    "args": ["-y", "@cognitionai/metabase-mcp-server", "--all"],
+    "env": {
+      "METABASE_URL": "METABASE_URL_PLACEHOLDER",
+      "METABASE_API_KEY": "METABASE_API_KEY_PLACEHOLDER"
+    }
+  },
+  "automation": {
+    "type": "http",
+    "url": "https://automation.studyflash.ch/mcp-server/http"
+  }
+}
+MCPEOF
+)
+
+# Substitute secrets
+MCP_SERVERS=$(echo "$MCP_SERVERS" \
+  | sed "s|METABASE_URL_PLACEHOLDER|${METABASE_URL:-https://metabase.studyflash.ch/}|" \
+  | sed "s|METABASE_API_KEY_PLACEHOLDER|${METABASE_API_KEY:-}|")
+
+if [ ! -f "$CLAUDE_JSON" ]; then
+  echo "{\"mcpServers\": ${MCP_SERVERS}}" > "$CLAUDE_JSON"
+else
+  tmp=$(mktemp)
+  jq --argjson servers "$MCP_SERVERS" '.mcpServers = $servers' "$CLAUDE_JSON" > "$tmp"
+  mv "$tmp" "$CLAUDE_JSON"
+fi
+
+echo "Claude Code MCP servers configured."
