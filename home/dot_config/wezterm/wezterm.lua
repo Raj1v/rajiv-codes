@@ -115,5 +115,15 @@ return {
 		},
 		-- ALT+S → send raw ESC+s (not macOS ß) for sesh zsh widget
 		{ key = "s", mods = "ALT", action = wezterm.action.SendKey({ key = "s", mods = "ALT" }) },
+		-- ALT+1..9 → send raw Meta+digit (not macOS ¡™£¢∞§¶•ª) for tmux pane select
+		{ key = "1", mods = "ALT", action = wezterm.action.SendKey({ key = "1", mods = "ALT" }) },
+		{ key = "2", mods = "ALT", action = wezterm.action.SendKey({ key = "2", mods = "ALT" }) },
+		{ key = "3", mods = "ALT", action = wezterm.action.SendKey({ key = "3", mods = "ALT" }) },
+		{ key = "4", mods = "ALT", action = wezterm.action.SendKey({ key = "4", mods = "ALT" }) },
+		{ key = "5", mods = "ALT", action = wezterm.action.SendKey({ key = "5", mods = "ALT" }) },
+		{ key = "6", mods = "ALT", action = wezterm.action.SendKey({ key = "6", mods = "ALT" }) },
+		{ key = "7", mods = "ALT", action = wezterm.action.SendKey({ key = "7", mods = "ALT" }) },
+		{ key = "8", mods = "ALT", action = wezterm.action.SendKey({ key = "8", mods = "ALT" }) },
+		{ key = "9", mods = "ALT", action = wezterm.action.SendKey({ key = "9", mods = "ALT" }) },
 	},
 }
