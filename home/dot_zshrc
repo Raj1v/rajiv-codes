@@ -167,7 +167,13 @@ alias o='code'
 
 eval "$(zoxide init zsh)"
 eval "$(workmux completions zsh)"
-eval "$(eas autocomplete:script zsh)"
+# eas-cli completion (cached; regenerated weekly to avoid ~200ms startup cost)
+EAS_COMPLETION_CACHE="$HOME/.cache/eas-completion.zsh"
+if [[ ! -f "$EAS_COMPLETION_CACHE" ]] || [[ -n "$(find "$EAS_COMPLETION_CACHE" -mtime +7 2>/dev/null)" ]]; then
+  mkdir -p "$(dirname "$EAS_COMPLETION_CACHE")"
+  eas autocomplete:script zsh > "$EAS_COMPLETION_CACHE" 2>/dev/null
+fi
+source "$EAS_COMPLETION_CACHE"
 eval "$(fzf --zsh)"
 
 # Sesh session picker (Alt+s, works outside tmux)
