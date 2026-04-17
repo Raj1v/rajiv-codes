@@ -168,10 +168,18 @@ alias o='code'
 eval "$(zoxide init zsh)"
 eval "$(workmux completions zsh)"
 # eas-cli completion (cached; regenerated weekly to avoid ~200ms startup cost)
+# Inline zsh_setup minus its compinit — oh-my-zsh already runs compinit, a
+# second call rebuilds .zcompdump (~470ms). Fall back to the wrapper on
+# fresh machines where zsh_setup hasn't been generated yet.
 EAS_COMPLETION_CACHE="$HOME/.cache/eas-completion.zsh"
+EAS_ZSH_SETUP="$HOME/.cache/eas-cli/autocomplete/zsh_setup"
 if [[ ! -f "$EAS_COMPLETION_CACHE" ]] || [[ -n "$(find "$EAS_COMPLETION_CACHE" -mtime +7 2>/dev/null)" ]]; then
   mkdir -p "$(dirname "$EAS_COMPLETION_CACHE")"
-  eas autocomplete:script zsh > "$EAS_COMPLETION_CACHE" 2>/dev/null
+  if [[ -f "$EAS_ZSH_SETUP" ]]; then
+    grep -v '^compinit' "$EAS_ZSH_SETUP" > "$EAS_COMPLETION_CACHE"
+  else
+    eas autocomplete:script zsh > "$EAS_COMPLETION_CACHE" 2>/dev/null
+  fi
 fi
 source "$EAS_COMPLETION_CACHE"
 eval "$(fzf --zsh)"
