@@ -2,6 +2,7 @@ packages:
   brews:
     - bash
     - chezmoi
+    - fnm
     - fzf
     - zoxide
     - uv

@@ -33,14 +33,14 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
 
-# Install nvm and Node.js
-if [ ! -d "$HOME/.nvm" ]; then
-  echo "Installing nvm..."
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+# Install Node.js via fnm (replaces nvm)
+if [ -d "$HOME/.nvm" ]; then
+  echo "Removing nvm (replaced by fnm)..."
+  rm -rf "$HOME/.nvm"
 fi
-export NVM_DIR="$HOME/.nvm"
-. "$NVM_DIR/nvm.sh"
-nvm install 24
+eval "$(fnm env)"
+fnm install 24
+fnm default 24
 corepack enable pnpm
 pnpm add -g eas-cli
 
