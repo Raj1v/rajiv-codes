@@ -38,6 +38,7 @@ if [ -d "$HOME/.nvm" ]; then
   echo "Removing nvm (replaced by fnm)..."
   rm -rf "$HOME/.nvm"
 fi
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv 2>/dev/null || /opt/homebrew/bin/brew shellenv 2>/dev/null)"
 eval "$(fnm env)"
 fnm install 24
 fnm default 24
