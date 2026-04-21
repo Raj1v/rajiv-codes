@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Install Homebrew if not present
@@ -39,7 +39,7 @@ if [ -d "$HOME/.nvm" ]; then
   rm -rf "$HOME/.nvm"
 fi
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv 2>/dev/null || /opt/homebrew/bin/brew shellenv 2>/dev/null)"
-eval "$(fnm env)"
+eval "$(fnm env --shell bash)"
 fnm install 24
 fnm default 24
 corepack enable pnpm
