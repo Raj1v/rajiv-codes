@@ -1,6 +1,7 @@
 #!/bin/bash
 # Configure user-scope MCP servers in ~/.claude.json
-# chezmoi re-runs this whenever the script content changes (new MCP added/removed).
+# Runs on every `chezmoi apply` (idempotent) so secret/URL changes in
+# ~/.secrets flow through without needing to bust the script-state cache.
 # Secrets are read from environment variables (sourced from ~/.secrets).
 
 set -euo pipefail
