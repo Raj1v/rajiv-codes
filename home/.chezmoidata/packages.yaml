@@ -21,6 +21,7 @@ packages:
     - ripgrep
     - commitizen
     - ffmpeg
+    - git-delta
     - git-lfs
     - glow
     - go
