@@ -6,7 +6,7 @@
 [diff]
 	tool = code
 [difftool "code"]
-	cmd = /usr/local/bin/code --wait --diff \"$LOCAL\" \"$REMOTE\"
+	cmd = code --wait --diff \"$LOCAL\" \"$REMOTE\"
 [credential "https://github.com"]
 	helper =
 	helper = !gh auth git-credential
