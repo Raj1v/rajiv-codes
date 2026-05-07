@@ -30,6 +30,7 @@ packages:
     - just
     - lefthook
     - llm
+    - mosh
     - ollama
     - pandoc
     - rust
