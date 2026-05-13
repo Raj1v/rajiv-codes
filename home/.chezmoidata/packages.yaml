@@ -33,6 +33,8 @@ packages:
     - mosh
     - ollama
     - pandoc
+    - pi-coding-agent
+    - vhs
     - rust
     - tmux
     - watchman
