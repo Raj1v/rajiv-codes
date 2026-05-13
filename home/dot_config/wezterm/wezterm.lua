@@ -25,8 +25,11 @@ wezterm.on("format-tab-title", function(tab)
 end)
 
 
-local function scheme_for_appearance(appearance)
-	if appearance:find("Dark") then
+local appearance = wezterm.gui.get_appearance()
+local is_dark = appearance:find("Dark") ~= nil
+
+local function scheme_for_appearance()
+	if is_dark then
 		return "Catppuccin Mocha"
 	else
 		return "Catppuccin Latte"
@@ -40,7 +43,12 @@ return {
 	font_size = 18.0,
 	hide_tab_bar_if_only_one_tab = true,
 	window_decorations = "RESIZE",
-	color_scheme = scheme_for_appearance(wezterm.gui.get_appearance()),
+	color_scheme = scheme_for_appearance(),
+	-- COLORFGBG tells CLIs (Charm/fang, vim, etc.) the bg brightness without
+	-- needing an OSC 11 query, which tmux blocks. Format is "fg;bg" (ANSI idx).
+	set_environment_variables = {
+		COLORFGBG = is_dark and "15;0" or "0;15",
+	},
 	window_close_confirmation = "NeverPrompt",
 	window_padding = {
 		left = 8,
