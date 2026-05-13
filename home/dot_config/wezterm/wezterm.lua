@@ -62,12 +62,26 @@ return {
 		},
 	},
 	keys = {
-		{ key = "w", mods = "CMD", action = wezterm.action.CloseCurrentTab({ confirm = false }) },
+		-- CMD+W → tmux kill pane (prefix + x)
+		{
+			key = "w",
+			mods = "CMD",
+			action = wezterm.action.Multiple({
+				wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
+				wezterm.action.SendKey({ key = "x" }),
+			}),
+		},
 		-- CMD+F → tmux prefix (Ctrl+F)
 		{ key = "f", mods = "CMD", action = wezterm.action.SendKey({ key = "f", mods = "CTRL" }) },
-		-- CMD+[/] → cycle tmux panes (mapped to Alt+p/n in tmux.conf)
-		{ key = "[", mods = "CMD", action = wezterm.action.SendKey({ key = "p", mods = "ALT" }) },
-		{ key = "]", mods = "CMD", action = wezterm.action.SendKey({ key = "n", mods = "ALT" }) },
+		-- CMD+[/] → prev/next tmux window (prefix + p / prefix + n)
+		{ key = "[", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "p" }) }) },
+		{ key = "]", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "n" }) }) },
+		-- CMD+SHIFT+[/] → prev/next wezterm tab
+		{ key = "[", mods = "CMD|SHIFT", action = wezterm.action.ActivateTabRelative(-1) },
+		{ key = "]", mods = "CMD|SHIFT", action = wezterm.action.ActivateTabRelative(1) },
+		-- OPT+[/] → cycle tmux panes (mapped to Alt+p/n in tmux.conf)
+		{ key = "[", mods = "ALT", action = wezterm.action.SendKey({ key = "p", mods = "ALT" }) },
+		{ key = "]", mods = "ALT", action = wezterm.action.SendKey({ key = "n", mods = "ALT" }) },
 		-- CMD+HJKL / CMD+Arrows → vim-style tmux pane switching (mapped to Alt+hjkl in tmux.conf)
 		{ key = "h", mods = "CMD", action = wezterm.action.SendKey({ key = "h", mods = "ALT" }) },
 		{ key = "j", mods = "CMD", action = wezterm.action.SendKey({ key = "j", mods = "ALT" }) },
@@ -86,15 +100,19 @@ return {
 				wezterm.action.SendKey({ key = "K", mods = "SHIFT" }),
 			}),
 		},
-		-- CMD+SHIFT+T → new tmux window (prefix + c)
+		-- CMD+T → new tmux window (prefix + c)
 		{
 			key = "t",
-			mods = "CMD|SHIFT",
+			mods = "CMD",
 			action = wezterm.action.Multiple({
 				wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
 				wezterm.action.SendKey({ key = "c" }),
 			}),
 		},
+		-- CMD+SHIFT+T → new wezterm tab
+		{ key = "t", mods = "CMD|SHIFT", action = wezterm.action.SpawnTab("CurrentPaneDomain") },
+		-- CMD+SHIFT+W → close wezterm tab
+		{ key = "w", mods = "CMD|SHIFT", action = wezterm.action.CloseCurrentTab({ confirm = false }) },
 		-- CMD+N → new named tmux session (prefix + N)
 		{
 			key = "n",
@@ -104,6 +122,8 @@ return {
 				wezterm.action.SendKey({ key = "N", mods = "SHIFT" }),
 			}),
 		},
+		-- CMD+SHIFT+N → new wezterm window
+		{ key = "n", mods = "CMD|SHIFT", action = wezterm.action.SpawnWindow },
 		-- CMD+M → tmux zoom pane (prefix + z)
 		{
 			key = "m",
@@ -113,6 +133,26 @@ return {
 				wezterm.action.SendKey({ key = "z" }),
 			}),
 		},
+		-- CMD+1..9 → switch tmux window by number (prefix + digit). Overrides wezterm tab nav.
+		{ key = "1", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "1" }) }) },
+		{ key = "2", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "2" }) }) },
+		{ key = "3", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "3" }) }) },
+		{ key = "4", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "4" }) }) },
+		{ key = "5", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "5" }) }) },
+		{ key = "6", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "6" }) }) },
+		{ key = "7", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "7" }) }) },
+		{ key = "8", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "8" }) }) },
+		{ key = "9", mods = "CMD", action = wezterm.action.Multiple({ wezterm.action.SendKey({ key = "f", mods = "CTRL" }), wezterm.action.SendKey({ key = "9" }) }) },
+		-- CMD+SHIFT+1..9 → switch wezterm tab by number (0-indexed under the hood)
+		{ key = "1", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(0) },
+		{ key = "2", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(1) },
+		{ key = "3", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(2) },
+		{ key = "4", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(3) },
+		{ key = "5", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(4) },
+		{ key = "6", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(5) },
+		{ key = "7", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(6) },
+		{ key = "8", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(7) },
+		{ key = "9", mods = "CMD|SHIFT", action = wezterm.action.ActivateTab(8) },
 		-- ALT+S → send raw ESC+s (not macOS ß) for sesh zsh widget
 		{ key = "s", mods = "ALT", action = wezterm.action.SendKey({ key = "s", mods = "ALT" }) },
 		-- ALT+1..9 → send raw Meta+digit (not macOS ¡™£¢∞§¶•ª) for tmux pane select
