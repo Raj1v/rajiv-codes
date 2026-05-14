@@ -62,10 +62,19 @@ return {
 		},
 	},
 	keys = {
-		-- CMD+W → tmux kill pane (prefix + x)
+		-- CMD+W → tmux kill window (prefix + X)
 		{
 			key = "w",
 			mods = "CMD",
+			action = wezterm.action.Multiple({
+				wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
+				wezterm.action.SendKey({ key = "X", mods = "SHIFT" }),
+			}),
+		},
+		-- OPT+W → tmux kill pane (prefix + x)
+		{
+			key = "w",
+			mods = "ALT",
 			action = wezterm.action.Multiple({
 				wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
 				wezterm.action.SendKey({ key = "x" }),
