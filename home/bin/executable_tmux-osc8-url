@@ -66,7 +66,7 @@ fi
 
 chosen=$(printf '%s\n' "$items" \
     | fzf-tmux -w 100% -h 50% --no-preview --exit-0 \
-        --delimiter=$'\t' --with-nth=1 --tiebreak=index)
+        --delimiter=$'\t' --with-nth=1 --tiebreak=index) || true
 
 [ -z "$chosen" ] && exit 0
 
