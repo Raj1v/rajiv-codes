@@ -1,24 +1,71 @@
 #!/usr/bin/env bash
 # OSC 8-aware tmux URL picker.
 #
-# tmux-fzf-url's xre pipeline runs --strip-ansi before pattern matching, which
-# also strips OSC 8 hyperlink escapes — taking the URL inside them with it. This
-# wrapper captures the pane with escapes intact and runs a plain-text URL regex
-# on the raw bytes. The URL inside an OSC 8 sequence is ASCII text sandwiched
-# between escape markers, so a single regex pass catches both plain URLs and
-# hyperlink URLs without needing to parse the escape sequences.
+# Captures the visible pane with escape sequences intact and extracts:
+#   - OSC 8 hyperlinks (their URL plus the user-visible label), displayed as
+#     "label (truncated url)" in the fzf list
+#   - plain URLs from the remaining text
+# The full URL is hidden in a second tab-separated field so fzf shows the
+# friendly form while the script opens the real URL on selection.
 set -euo pipefail
 
 content=$(tmux capture-pane -p -e -J)
 
-urls=$(printf '%s\n' "$content" \
-    | grep -oE '(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]' \
-    | awk '!seen[$0]++')
+items=$(printf '%s' "$content" | perl -e '
+use strict; use warnings;
+local $/;
+my $text = <STDIN> // "";
+my @out;
+my %seen;
 
-if [ -z "$urls" ]; then
-    tmux display 'tmux-osc8-url: no URLs found'
+sub trunc_url {
+    my $u = shift;
+    my $disp = $u;
+    $disp =~ s{^https?://}{};
+    return $disp if length($disp) <= 50;
+    return substr($disp, 0, 30) . "…" . substr($disp, -19);
+}
+
+sub clean_label {
+    my $s = shift;
+    $s =~ s/\x1b\[[0-9;]*[A-Za-z]//g;   # strip CSI escapes (SGR colors, cursor moves)
+    $s =~ s/[\t\r\n]+/ /g;
+    $s =~ s/\s+/ /g;
+    $s =~ s/^\s+|\s+$//g;
+    return $s;
+}
+
+# OSC 8: ESC ] 8 ; <params> ; URL ST LABEL ESC ] 8 ; ; ST   (ST = BEL or ESC\)
+while ($text =~ /\x1b\]8;[^;]*;([^\x07\x1b]+)(?:\x07|\x1b\\)(.*?)\x1b\]8;;(?:\x07|\x1b\\)/sg) {
+    my ($url, $label) = ($1, $2);
+    next unless $url;
+    next if $seen{$url}++;
+    $label = clean_label($label);
+    $label = $url unless length $label;
+    push @out, "$label (" . trunc_url($url) . ")\t$url";
+}
+
+# Strip OSC 8 sequences entirely, then extract remaining plain URLs.
+$text =~ s/\x1b\]8;[^;]*;[^\x07\x1b]*(?:\x07|\x1b\\).*?\x1b\]8;;(?:\x07|\x1b\\)//sg;
+while ($text =~ m{((?:https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|])}g) {
+    my $url = $1;
+    next if $seen{$url}++;
+    push @out, "$url\t$url";
+}
+
+print "$_\n" for @out;
+')
+
+if [ -z "$items" ]; then
+    tmux display "tmux-osc8-url: no URLs found"
     exit 0
 fi
 
-chosen=$(printf '%s\n' "$urls" | fzf-tmux -w 100% -h 50% --no-preview --exit-0)
-[ -n "$chosen" ] && "$HOME/bin/open-url" "$chosen"
+chosen=$(printf '%s\n' "$items" \
+    | fzf-tmux -w 100% -h 50% --no-preview --exit-0 \
+        --delimiter=$'\t' --with-nth=1 --tiebreak=index)
+
+[ -z "$chosen" ] && exit 0
+
+url=$(printf '%s' "$chosen" | awk -F'\t' '{print $2}')
+[ -n "$url" ] && "$HOME/bin/open-url" "$url"
