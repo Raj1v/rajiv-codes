@@ -41,8 +41,11 @@ while ($text =~ /\x1b\]8;[^;]*;([^\x07\x1b]+)(?:\x07|\x1b\\)(.*?)\x1b\]8;;(?:\x0
     next unless $url;
     next if $seen{$url}++;
     $label = clean_label($label);
-    $label = $url unless length $label;
-    push @out, "$label (" . trunc_url($url) . ")\t$url";
+    if (length $label) {
+        push @out, "$label (" . trunc_url($url) . ")\t$url";
+    } else {
+        push @out, "$url\t$url";
+    }
 }
 
 # Strip OSC 8 sequences entirely, then extract remaining plain URLs.
