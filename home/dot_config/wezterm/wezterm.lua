@@ -1,8 +1,13 @@
 local wezterm = require("wezterm")
 
--- Open URLs sent from remote machines via OSC 1337 SetUserVar=openurl=<url>
+-- Open URLs/paths sent from remote machines via OSC 1337 SetUserVar=openurl=<url>
+-- Values starting with ~ are expanded against the local $HOME (so remotes can
+-- emit ~/mnt/<host>/... paths without knowing the local user).
 wezterm.on("user-var-changed", function(window, pane, name, value)
 	if name == "openurl" then
+		if value:sub(1, 1) == "~" then
+			value = (os.getenv("HOME") or "") .. value:sub(2)
+		end
 		wezterm.run_child_process({ "open", value })
 	end
 end)
@@ -37,6 +42,10 @@ local function scheme_for_appearance()
 end
 
 return {
+	-- Use the Metal-native renderer instead of the deprecated OpenGL/CGL backend,
+	-- which segfaults in Apple's GL-on-Metal emulation during Space/display
+	-- reconfiguration (frontBuffer flush crash on Apple Silicon).
+	front_end = "WebGpu",
 	initial_cols = 120,
 	initial_rows = 36,
 	font = wezterm.font_with_fallback({ "Hack Nerd Font", "Apple Color Emoji" }),
