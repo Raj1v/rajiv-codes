@@ -26,6 +26,19 @@ relevant context in each prompt you write.
 If tasks reference a markdown file (e.g., a plan or spec), re-read the file to
 ensure you have the latest version before writing prompts.
 
+## Stay faithful to the conversation — do NOT editorialize
+
+The prompt must convey only what the user actually said or what was discussed
+above. You may paraphrase, condense, and reorganize that material — but do NOT
+add requirements, constraints, acceptance criteria, design decisions, or "nice
+to haves" of your own. Inventing requirements misleads the worktree agent into
+thinking they came from the user.
+
+- If the user didn't state it and it wasn't discussed, don't put it in the prompt.
+- When unsure whether a detail is a real requirement, leave it out or ask the user — don't manufacture it.
+- Let the worktree agent do its own research and make its own implementation
+  decisions. Your job is to relay the task, not to pre-decide how it's built.
+
 For each task:
 
 1. Generate a short, descriptive worktree name (2-4 words, kebab-case)
