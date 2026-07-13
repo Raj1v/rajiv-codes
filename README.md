@@ -1,6 +1,6 @@
-# Personal Monorepo
+# Dotfiles
 
-A home for all Rajiv's configurations.
+A home for all configurations.
 
 ## Prerequisites (install manually)
 
