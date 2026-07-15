@@ -1,0 +1,25 @@
+#!/bin/bash
+# Open folder/file in local Finder via WezTerm openurl (remote machines only).
+# On local mac, delegates to /usr/bin/open transparently.
+
+if [[ -z "$SSH_CONNECTION" ]]; then
+  exec /usr/bin/open "$@"
+fi
+
+target="${1:-.}"
+abs="$(cd "$target" 2>/dev/null && pwd || realpath "$target")"
+host="${LC_SSH_HOST:-$(hostname)}"
+
+if [[ "$abs" != "$HOME"* ]]; then
+  echo "open: only paths under \$HOME ($HOME) are reachable from the local mount (got $abs)" >&2
+  exit 1
+fi
+
+local_path="~/mnt/${host}${abs#$HOME}"
+encoded=$(echo -n "$local_path" | base64)
+
+if [[ -n "$TMUX" ]]; then
+  printf "\ePtmux;\e\e]1337;SetUserVar=openurl=%s\a\e\\\\" "$encoded"
+else
+  printf "\e]1337;SetUserVar=openurl=%s\a" "$encoded"
+fi

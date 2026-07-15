@@ -1,0 +1,8 @@
+nerdfont: true
+post_create:
+  - ~/.config/workmux/pnpm-clone-node-modules.sh
+sandbox:
+  enabled: false
+  container:
+    runtime: docker
+  image: rajiv-sandbox
