@@ -1,0 +1,16 @@
+#!/bin/sh
+# Stamp the studyflash .workmux.yaml into every main checkout of the monorepo.
+# Re-runs when the master copy changes:
+# hash: {{ include "dot_config/workmux/studyflash.workmux.yaml" | sha256sum }}
+set -eu
+
+src="$HOME/.config/workmux/studyflash.workmux.yaml"
+[ -f "$src" ] || exit 0
+
+find "$HOME" -maxdepth 3 -type d -name studyflash_monorepo 2>/dev/null |
+  while IFS= read -r repo; do
+    # main checkouts only (worktrees have a .git file, not a dir)
+    [ -d "$repo/.git" ] || continue
+    cp "$src" "$repo/.workmux.yaml"
+    echo "stamped $repo/.workmux.yaml"
+  done

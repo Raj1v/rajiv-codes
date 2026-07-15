@@ -1,0 +1,34 @@
+# Managed by chezmoi — master copy at ~/.config/workmux/studyflash.workmux.yaml,
+# stamped into the monorepo checkout as .workmux.yaml on `chezmoi apply`.
+# Edit the chezmoi source, not the copy in the repo.
+# Option reference: `workmux config reference`
+
+base_branch: main
+mode: session
+agent: claude --dangerously-skip-permissions
+
+# node_modules warming + pnpm install (global hook)
+post_create:
+  - '<global>'
+
+files:
+  copy:
+    - .env
+    - .env.workmux
+    - .mcp.json
+    - apps/backend/.env
+    - apps/core-api/.env
+    - apps/core-api/supabase/.env
+    - apps/landing-page/.env
+    - apps/learning-api/.env
+    - apps/mobile-app/.env.local
+    - apps/mountain-max/landing-page/.env
+    - apps/portal/.env
+    - apps/supabase/.env
+    - apps/supabase/.env.preview
+    - apps/supabase/functions/.env
+    - apps/wrapped/.env
+    - packages/common/.env
+
+sandbox:
+  enabled: false
