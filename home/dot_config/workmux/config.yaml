@@ -1,6 +1,32 @@
+# Managed by chezmoi. Option reference: `workmux config reference`
 nerdfont: true
+mode: session
+agent: claude --dangerously-skip-permissions
+
+# node_modules warming + pnpm install (no-op outside pnpm repos)
 post_create:
   - ~/.config/workmux/pnpm-clone-node-modules.sh
+
+# gitignored files to carry into new worktrees; missing paths are skipped
+files:
+  copy:
+    - .env
+    - .env.workmux
+    - .mcp.json
+    - apps/backend/.env
+    - apps/core-api/.env
+    - apps/core-api/supabase/.env
+    - apps/landing-page/.env
+    - apps/learning-api/.env
+    - apps/mobile-app/.env.local
+    - apps/mountain-max/landing-page/.env
+    - apps/portal/.env
+    - apps/supabase/.env
+    - apps/supabase/.env.preview
+    - apps/supabase/functions/.env
+    - apps/wrapped/.env
+    - packages/common/.env
+
 sandbox:
   enabled: false
   container:
