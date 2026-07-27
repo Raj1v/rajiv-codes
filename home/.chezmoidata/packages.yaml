@@ -42,7 +42,7 @@ packages:
   casks:
     - 1password-cli
     - font-hack-nerd-font
-    - wezterm
+    - wezterm@nightly
     - bruno
     - caffeine
     - charmstone

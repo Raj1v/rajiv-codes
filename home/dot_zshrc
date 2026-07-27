@@ -254,3 +254,6 @@ git() {
 function qq() { llm -m claude-haiku-4.5 "$*"; }
 export PATH="$HOME/.cargo/bin:$PATH"
 export EDITOR=nvim
+
+# sentry
+fpath=("/Users/rajiv/.local/share/zsh/site-functions" $fpath)
