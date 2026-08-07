@@ -1,5 +1,6 @@
 packages:
   brews:
+    - awscli
     - azure-cli
     - bash
     - chezmoi
@@ -30,6 +31,7 @@ packages:
     - just
     - lefthook
     - llm
+    - codex
     - mosh
     - ollama
     - pandoc
