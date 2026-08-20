@@ -10,9 +10,6 @@ if [[ "$OSTYPE" == darwin* ]]; then
   fi
 fi
 
-# Homebrew
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv 2>/dev/null || /opt/homebrew/bin/brew shellenv 2>/dev/null)"
-
 # Add ~/bin to PATH
 export PATH="$HOME/bin:$PATH"
 
