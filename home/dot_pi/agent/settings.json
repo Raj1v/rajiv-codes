@@ -1,0 +1,19 @@
+{
+  "lastChangelogVersion": "0.84.2",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-fable-5",
+  "defaultThinkingLevel": "medium",
+  "theme": "catppuccin-latte",
+  "markdown": {
+    "codeBlockIndent": "    "
+  },
+  "packages": [
+    "npm:pi-claude-oauth-adapter",
+    "npm:@plannotator/pi-extension",
+    "npm:@tintinweb/pi-subagents",
+    "npm:@tintinweb/pi-tasks",
+    "npm:@gotgenes/pi-anthropic-auth",
+    "npm:pi-mcp-adapter",
+    "npm:pi-figma-remote-auth"
+  ]
+}
