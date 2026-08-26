@@ -230,7 +230,30 @@ fi
 
 # macOS-only: mount remote filesystems via sshfs
 if [[ "$OSTYPE" == darwin* ]]; then
-  alias mnt-sexy="mkdir -p ~/mnt/sexy-mf && sshfs sexy-mf:/home/sexy-mf ~/mnt/sexy-mf"
+  # mnt <ssh-host> [remote-path]  -> ~/mnt/<ssh-host>   (default: remote home)
+  mnt() {
+    local host="$1" remote="${2:-}"
+    [[ -z "$host" ]] && { echo "usage: mnt <ssh-host> [remote-path]" >&2; return 1 }
+    local mp="$HOME/mnt/$host"
+    if mount | grep -q " on $mp "; then
+      echo "already mounted: $mp"; return 0
+    fi
+    mkdir -p "$mp" || return 1
+    sshfs "$host:$remote" "$mp" \
+      -o reconnect,follow_symlinks,defer_permissions,noappledouble,volname="$host" \
+      && echo "mounted $host -> $mp"
+  }
+
+  # umnt <ssh-host>
+  umnt() {
+    local host="$1"
+    [[ -z "$host" ]] && { echo "usage: umnt <ssh-host>" >&2; return 1 }
+    umount "$HOME/mnt/$host" && echo "unmounted $HOME/mnt/$host"
+  }
+
+  compdef _ssh mnt umnt 2>/dev/null
+
+  alias mnt-sexy="mnt sexy-mf"
 fi
 
 alias pos="productivity-os"
