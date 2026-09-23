@@ -8,6 +8,16 @@
   },
   "model": "opus[1m]",
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/gh-inbox-session-start.sh"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "permission_prompt|elicitation_dialog",
@@ -48,6 +58,16 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jot unsubscribe-all 2>/dev/null || true"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -55,14 +75,42 @@
     "command": "node \"{{ .chezmoi.homeDir }}/.claude/hooks/statusline.js\""
   },
   "enabledPlugins": {
-    "recall@recall-marketplace": true
+    "recall@recall-marketplace": true,
+    "figma@claude-plugins-official": true,
+    "posthog@claude-plugins-official": true,
+    "supabase@claude-plugins-official": true,
+    "ponytail@ponytail": true,
+    "studyflash-traces@studyflash": true,
+    "slack@claude-plugins-official": true
   },
-  "effortLevel": "low",
-  "fastMode": true,
+  "extraKnownMarketplaces": {
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    },
+    "studyflash": {
+      "source": {
+        "source": "github",
+        "repo": "studyflash-ai/studyflash"
+      }
+    }
+  },
+  "effortLevel": "medium",
   "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
   "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
   "theme": "auto",
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "env": {
+    "PLANNOTATOR_REMOTE": "1",
+    "PLANNOTATOR_URL_HOST": "100.105.175.39"
+  }
 }
