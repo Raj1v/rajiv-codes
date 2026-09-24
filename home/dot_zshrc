@@ -251,6 +251,8 @@ git() {
 function qq() { llm -m claude-haiku-4.5 "$*"; }
 export PATH="$HOME/.cargo/bin:$PATH"
 export EDITOR=nvim
+# stable plannotator URL per tmux pane (reload the same tab each round); range spills over for concurrent runs in one pane
+[[ -n $TMUX_PANE ]] && { p=$(( 19000 + (${TMUX_PANE#%} % 500) * 10 )); export PLANNOTATOR_PORT="$p-$((p + 9))"; unset p; }
 
 # sentry
 fpath=("/Users/rajiv/.local/share/zsh/site-functions" $fpath)
