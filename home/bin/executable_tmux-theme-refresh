@@ -10,6 +10,19 @@ echo "=== $(date) pid=$$ tty=$(tty 2>&1) ===" >&9
 # Don't use `set -e` — we want to see *where* failures happen.
 set -u
 
+# SSH forwards LC_THEME (sshd AcceptEnv LC_*) into the session env, which the
+# popup inherits — trust it and skip the OSC 11 round-trip. Over SSH the OSC
+# reply is unreliable (tmux 3.7 consumes OSC 11 replies for its own theme
+# detection, and the single dd read races network latency).
+theme= detail=
+case "${LC_THEME:-}" in
+    dark)  theme=dark;  colorfgbg="15;0"; expected_flavor=mocha; detail="from LC_THEME" ;;
+    light) theme=light; colorfgbg="0;15"; expected_flavor=latte; detail="from LC_THEME" ;;
+esac
+echo "LC_THEME='${LC_THEME:-}' -> theme='$theme'" >&9
+
+if [ -z "$theme" ]; then
+
 if ! exec 3<>/dev/tty 2>>"$LOG"; then
     echo "FAIL: cannot open /dev/tty" >&9
     tmux display-message "theme-refresh: /dev/tty unavailable (see $LOG)"
@@ -51,17 +64,23 @@ if [ "$luma" -lt 128 ]; then
 else
     theme=light; colorfgbg="0;15"; expected_flavor=latte
 fi
+detail="bg $(printf '%02x%02x%02x' $r $g $b), luma $luma"
 
-current_flavor=$(tmux show -gv @catppuccin_flavor 2>/dev/null || true)
-echo "current='$current_flavor' expected='$expected_flavor'" >&9
+fi  # end OSC 11 fallback
 
-if [ "$current_flavor" = "$expected_flavor" ]; then
+# Compare against the global env var, not @catppuccin_flavor — source-file's
+# if-shell applies the flavor asynchronously, so the flavor can lag behind.
+current=$(tmux showenv -g LC_THEME 2>/dev/null | cut -d= -f2-)
+echo "current='$current' expected='$theme'" >&9
+
+if [ "$current" = "$theme" ]; then
     echo "no-op: theme already $theme" >&9
+    tmux display-message "theme: already $theme ($detail)"
     exit 0
 fi
 
 tmux setenv -g LC_THEME "$theme"
 tmux setenv -g COLORFGBG "$colorfgbg"
 tmux source-file ~/.tmux.conf
-tmux display-message "theme: $theme (bg $(printf '%02x%02x%02x' $r $g $b), luma $luma)"
+tmux display-message "theme: $theme ($detail)"
 echo "applied: $theme" >&9

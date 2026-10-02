@@ -90,9 +90,8 @@ The prompt file should:
 - Include the full task description (the sidekick sees no prior context).
 - Use RELATIVE paths — the sidekick starts in the same `$PWD` as you.
 - Be specific about what the agent should accomplish.
-- State whether the agent should commit/push or leave changes uncommitted.
-  Default to **leave uncommitted** since you're sharing the worktree — let
-  the user decide what to keep.
+- Tell the agent to **commit and push** its work. Never instruct it to leave
+  changes uncommitted — uncommitted work in a shared worktree gets lost.
 
 Do NOT include the worktree setup line from `/worktree` (no fetch/rebase/
 install) — this is the same worktree, already set up.

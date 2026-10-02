@@ -13,3 +13,11 @@
 [credential "https://gist.github.com"]
 	helper =
 	helper = !gh auth git-credential
+[core]
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	side-by-side = true
+	line-numbers = true
+	navigate = true

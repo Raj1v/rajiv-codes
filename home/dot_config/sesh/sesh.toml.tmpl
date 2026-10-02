@@ -1,0 +1,55 @@
+#:schema https://github.com/joshmedeski/sesh/raw/main/sesh.schema.json
+{{- $studyflash := ternary "~/repos/studyflash_monorepo/" "~/studyflash/" (eq .chezmoi.os "darwin") }}
+[[session]]
+name = "dotfiles"
+path = "{{ .chezmoi.workingTree }}"
+
+[[session]]
+name = "Inbox"
+path = "~/inbox"
+startup_command = "bin/tmux-inbox.sh"
+
+[[session]]
+name = "TODO / Productivity OS"
+path = "~"
+startup_command = "pos"
+
+[[session]]
+name = "Studyflash Monorepo"
+path = "{{ $studyflash }}"
+
+[[session]]
+name = "Ticket Grooming"
+path = "{{ $studyflash }}"
+startup_command = "claude --dangerously-skip-permissions 'Ticket grooming session. I will share items from a brain dump — for each one, spawn a ticket-drafter subagent (in parallel for batches) to draft a Linear ticket as a jot note. Wait for my first batch.'"
+
+[[session]]
+name = "Ticket Triage"
+path = "{{ $studyflash }}"
+startup_command = "git checkout triage-tickets"
+
+[[session]]
+name = "Workflow"
+path = "~"
+windows = ["chezmoi", "sesh-config", "jot", "skills"]
+
+
+[[window]]
+name = "git"
+startup_script = "git"
+
+[[window]]
+name = "chezmoi"
+path = "~/.local/share/chezmoi"
+
+[[window]]
+name = "sesh-config"
+path = "~/.config/sesh"
+
+[[window]]
+name = "jot"
+path = "~/jot"
+
+[[window]]
+name = "skills"
+path = "~/.claude/skills"

@@ -4,8 +4,9 @@
 # On remote/Linux: sends OSC 1337 SetUserVar to WezTerm, which triggers the
 # user-var-changed handler to run `open` on the local Mac.
 url="$1"
-if hash open &>/dev/null; then
-    nohup open "$url" &>/dev/null
+# uname, not `hash open` — ~/bin/open exists on Linux too now and would shadow this
+if [ "$(uname)" = Darwin ]; then
+    nohup /usr/bin/open "$url" &>/dev/null
 else
     encoded=$(printf '%s' "$url" | base64 | tr -d '\n')
     # Resolve output target: tmux pane tty if in tmux, otherwise /dev/tty
