@@ -323,6 +323,7 @@ fpath=("$HOME/.local/share/zsh/site-functions" $fpath)
 export PATH=$PATH:$HOME/.maestro/bin
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+if command -v mise >/dev/null 2>&1; then eval "$(mise activate zsh)"; fi
 
 # tmux command log: one JSON line per finished command → ~/.tmux-logs/commands.jsonl
 if [[ -n $TMUX ]] && (( $+commands[jq] )); then
