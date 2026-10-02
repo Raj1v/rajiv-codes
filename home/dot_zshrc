@@ -251,8 +251,13 @@ git() {
 function qq() { llm -m claude-haiku-4.5 "$*"; }
 export PATH="$HOME/.cargo/bin:$PATH"
 export EDITOR=nvim
+# the linux box is only reached over SSH, so plannotator's agent terminal is always remote
+[[ $OSTYPE == linux* ]] && export PLANNOTATOR_AGENT_TERMINAL_REMOTE=1
 # stable plannotator URL per tmux pane (reload the same tab each round); range spills over for concurrent runs in one pane
 [[ -n $TMUX_PANE ]] && { p=$(( 19000 + (${TMUX_PANE#%} % 500) * 10 )); export PLANNOTATOR_PORT="$p-$((p + 9))"; unset p; }
 
 # sentry
-fpath=("/Users/rajiv/.local/share/zsh/site-functions" $fpath)
+fpath=("$HOME/.local/share/zsh/site-functions" $fpath)
+export PATH=$PATH:$HOME/.maestro/bin
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
