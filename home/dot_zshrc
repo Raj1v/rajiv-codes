@@ -261,3 +261,11 @@ fpath=("$HOME/.local/share/zsh/site-functions" $fpath)
 export PATH=$PATH:$HOME/.maestro/bin
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
+# >>> boxd completions >>>
+# Managed by `boxd completions --install`; do not edit between markers.
+if [ -n "${ZSH_VERSION:-}" ]; then
+  whence compdef >/dev/null || { autoload -Uz compinit && compinit; }
+  command -v boxd >/dev/null && source <(boxd completions zsh)
+fi
+# <<< boxd completions <<<
