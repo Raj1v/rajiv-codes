@@ -18,13 +18,13 @@ MCP_SERVERS=$(cat <<'MCPEOF'
 {
   "tmux": {
     "type": "stdio",
-    "command": "npx",
-    "args": ["-y", "tmux-mcp", "--shell-type=zsh"],
+    "command": "pnpm",
+    "args": ["dlx", "tmux-mcp", "--shell-type=zsh"],
     "env": {}
   },
   "metabase": {
-    "command": "npx",
-    "args": ["-y", "@cognitionai/metabase-mcp-server", "--all"],
+    "command": "pnpm",
+    "args": ["dlx", "@cognitionai/metabase-mcp-server", "--all"],
     "env": {
       "METABASE_URL": "METABASE_URL_PLACEHOLDER",
       "METABASE_API_KEY": "METABASE_API_KEY_PLACEHOLDER"
@@ -40,8 +40,8 @@ MCP_SERVERS=$(cat <<'MCPEOF'
   },
   "mobile": {
     "type": "stdio",
-    "command": "npx",
-    "args": ["-y", "@mobilenext/mobile-mcp@latest"],
+    "command": "pnpm",
+    "args": ["dlx", "@mobilenext/mobile-mcp@latest"],
     "env": {}
   }
 }
