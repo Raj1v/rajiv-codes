@@ -33,6 +33,16 @@ MCP_SERVERS=$(cat <<'MCPEOF'
   "automation": {
     "type": "http",
     "url": "https://automation.studyflash.ch/mcp-server/http"
+  },
+  "notion-studyflash": {
+    "type": "http",
+    "url": "https://mcp.notion.com/mcp"
+  },
+  "mobile": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "@mobilenext/mobile-mcp@latest"],
+    "env": {}
   }
 }
 MCPEOF

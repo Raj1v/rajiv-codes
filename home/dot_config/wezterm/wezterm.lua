@@ -126,6 +126,15 @@ return {
 				wezterm.action.SendKey({ key = "K", mods = "SHIFT" }),
 			}),
 		},
+		-- CMD+SHIFT+P → tmux prefix (Ctrl+F) then Shift+W (window picker)
+		{
+			key = "p",
+			mods = "CMD|SHIFT",
+			action = wezterm.action.Multiple({
+				wezterm.action.SendKey({ key = "f", mods = "CTRL" }),
+				wezterm.action.SendKey({ key = "W", mods = "SHIFT" }),
+			}),
+		},
 		-- CMD+T → new tmux window (prefix + c)
 		{
 			key = "t",

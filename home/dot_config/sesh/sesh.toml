@@ -4,6 +4,11 @@ name = "dotfiles"
 path = "~/repos/rajiv-codes"
 
 [[session]]
+name = "Inbox"
+path = "~/inbox"
+startup_command = "bin/tmux-inbox.sh"
+
+[[session]]
 name = "TODO / Productivity OS"
 path = "~"
 startup_command = "pos"

@@ -22,10 +22,12 @@ A short list: projects, tickets, owner per ticket, what's skipped and why. Initi
 ## 3. Draft into one folder
 
 - Folder: `.claude/ticket-drafts/<batch-slug>/` (e.g. `week-2026-09-28`). Everything for the batch lives here so one Plannotator session shows it all.
+- A single ticket from a working session still gets its own folder `.claude/ticket-drafts/<slug>/`.
 - One file per ticket/project: `NN-<slug>.md`, metadata lines on top (`project`, `assignee`, `cycle`, `priority`, `blocked by` / `related`), then the native template headings.
 - Draft in parallel with `ticket-drafter` agents, one per ticket. Every prompt states: the exact output path in the batch folder; **only content the source (or the approved proposal) says — no inferred requirements, no implementation choices** (those belong to the assignee); every SFD key/PR as a link; no Niko weekly-plan Notion link in Resources.
 - Audit each returned draft against the source before review; strip anything that isn't sourced.
 - Parked items go to `.claude/ticket-drafts/parked/`.
+- Ticket born from a working session: write its `/handoff` as `NN-<slug>.handoff.md` in the same folder (not the OS temp dir), so the Plannotator session reviews draft and handoff together.
 
 ## 4. Visual overview next to the drafts
 
@@ -50,6 +52,21 @@ Private per-person notes (e.g. `_niko.md`: message gist, notes to pass on, draft
 - Skip everything under "Won't groom tonight" or parked.
 - Never change assignee, priority or status on existing issues unless he names the issue and the value; keep existing priorities when bulk-moving.
 - After pushing: put the Linear links into the overview, report the created keys in a table.
+- Ticket born from a working session: attach its `NN-<slug>.handoff.md` from the draft folder, uploaded as `handoff.md`, under Relevant Resources (see below). The handoff carries the agent context (files, current state, gotchas); the body stays terse. Never fold handoff content into Requirements.
+
+### Attaching a file to an issue
+
+"Attach X to the ticket" means the file sits **inside the description**, under the `### 📚 Relevant Resources` heading. Not an Attachment entity — `create_attachment_from_upload` makes a link chip outside the body, which is the wrong thing ("you didnt use an attachment, you use da 'resource' in linear", SFD-3784, 2026-10-02).
+
+1. `prepare_attachment_upload` (issue, filename, contentType, size) → gives `assetUrl` + a signed `uploadRequest`.
+2. PUT the raw bytes to `uploadRequest.url` within 60s, sending every header in `uploadRequest.headers` verbatim — any omitted or re-cased header gives 403. `curl -X PUT --data-binary @<file>`.
+3. Do **not** call `create_attachment_from_upload`. Instead `save_issue` with a `patch` that inserts this after the Resources heading, with `href` set to the `assetUrl` from step 1:
+
+```
+<linear-embed node-type="file">{"uploadState":"finished","uploadId":"upload-<ms>-<rand>","href":"<assetUrl>","name":"<filename>","size":<bytes>,"mimetype":"<mime>"}</linear-embed>
+```
+
+Linear re-signs `href` on read, so the signature in the stored node expiring is fine. Verify with `get_issue`: the file must show up inside `description`, not only in `attachments[]`.
 
 ## 7. Wrap-up (when asked)
 

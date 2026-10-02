@@ -10,6 +10,12 @@ if [[ "$OSTYPE" == darwin* ]]; then
   fi
 fi
 
+# Synthesize COLORFGBG from LC_THEME on remote shells — SSH forwards LC_* but
+# drops COLORFGBG, so charm CLIs (gum, etc.) in tmux popups can't see the bg.
+if [[ -z "$COLORFGBG" && -n "$LC_THEME" ]]; then
+  [[ "$LC_THEME" == light ]] && export COLORFGBG="0;15" || export COLORFGBG="15;0"
+fi
+
 # Add ~/bin to PATH
 export PATH="$HOME/bin:$PATH"
 
@@ -139,6 +145,10 @@ if [ -f '/Users/rajiv/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '
 # STUDYFLASH
 export INFISICAL_ENV=dev
 export PATH="$HOME/.slack/bin:$PATH"
+
+# Default portless to tailscale mode so dev URLs land on the tailnet
+# hostname automatically (no per-project --tailscale flag needed).
+export PORTLESS_TAILSCALE=1
 unalias ls 2>/dev/null
 ls() {
   if [[ "$OSTYPE" == darwin* ]] && [ -d ~/.config/lsd ]; then
@@ -224,7 +234,21 @@ if [[ "$OSTYPE" == darwin* ]]; then
 fi
 
 alias pos="productivity-os"
-alias wm="workmux"
+# `wm` is workmux, except `wm add`, which detaches. Worktree creation and post-create
+# hooks are slow, so this frees the calling shell (and any popup) straight away.
+# Output goes to a log; tmux shows a message on finish, since the foreground output is lost.
+wm() {
+  if [[ $1 != add ]]; then
+    command workmux "$@"
+    return
+  fi
+  shift
+  local log=${XDG_CACHE_HOME:-$HOME/.cache}/workmux/add-$(date +%Y%m%d-%H%M%S).log
+  mkdir -p ${log:h}
+  nohup zsh -c "workmux add -b ${(j: :)${(q)@}} >| ${(q)log} 2>&1;
+    tmux display-message \"wm add: \$([[ \$? -eq 0 ]] && print done || print FAILED, see ${(q)log})\"" >/dev/null 2>&1 &!
+  print "backgrounded -> $log"
+}
 alias ts="tmux switch-client -t"
 alias cc="claude"
 
@@ -249,6 +273,44 @@ git() {
   fi
 }
 function qq() { llm -m claude-haiku-4.5 "$*"; }
+
+# Pick a PR with fzf, open it as a workmux worktree.
+# Defaults to your own PRs (--me). Pass --all to include everyone's.
+wmpr() {
+  local author="@me"
+  local -a passthrough
+  while (( $# )); do
+    case $1 in
+      --me)  author="@me"; shift ;;
+      --all) author=""; shift ;;
+      *)     passthrough+=("$1"); shift ;;
+    esac
+  done
+
+  local -a gh_args=(--limit 50 --json number,title,author,headRefName)
+  [[ -n $author ]] && gh_args+=(--author "$author")
+
+  local pr
+  pr=$(gh pr list "${gh_args[@]}" \
+        --template '{{range .}}{{printf "%-6v" .number}}  {{.headRefName | printf "%-40.40s"}}  {{.author.login | printf "%-15.15s"}}  {{.title}}{{"\n"}}{{end}}' \
+      | fzf --prompt="PR (${author:-all}) > " --height 60% --reverse \
+      | awk '{print $1}')
+  [[ -n $pr ]] && workmux add --pr "$pr" "${passthrough[@]}"
+}
+
+# Pick any remote branch with fzf, open it as a workmux worktree
+wmrb() {
+  local ref
+  git fetch --quiet --all
+  ref=$(git for-each-ref --sort=-committerdate \
+          --format='%(refname:short)  %(committerdate:relative)  %(authorname)' \
+          refs/remotes \
+      | grep -v '/HEAD' \
+      | fzf --prompt='branch > ' --height 60% --reverse \
+      | awk '{print $1}')
+  [[ -n $ref ]] && workmux add "$ref" "$@"
+}
+
 export PATH="$HOME/.cargo/bin:$PATH"
 export EDITOR=nvim
 # the linux box is only reached over SSH, so plannotator's agent terminal is always remote
@@ -261,6 +323,30 @@ fpath=("$HOME/.local/share/zsh/site-functions" $fpath)
 export PATH=$PATH:$HOME/.maestro/bin
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
+# tmux command log: one JSON line per finished command → ~/.tmux-logs/commands.jsonl
+if [[ -n $TMUX ]] && (( $+commands[jq] )); then
+  zmodload zsh/datetime
+  _tl_file=~/.tmux-logs/commands.jsonl
+  mkdir -p ${_tl_file:h}
+
+  _tl_preexec() { _tl_cmd=$1 _tl_cwd=$PWD _tl_start=$EPOCHREALTIME }
+  _tl_precmd() {
+    local exit=$?
+    [[ -z $_tl_cmd ]] && return
+    local -a t=("${(@f)$(tmux display -p -t "$TMUX_PANE" $'#S\n#I\n#W\n#P')}")
+    jq -nc \
+      --arg session "$t[1]" --argjson window "$t[2]" --arg window_name "$t[3]" --argjson pane "$t[4]" \
+      --arg cwd "$_tl_cwd" --arg cmd "$_tl_cmd" \
+      --argjson start "$_tl_start" --argjson end "$EPOCHREALTIME" --argjson exit "$exit" \
+      '{ts: ($start|todate), session:$session, window:$window, window_name:$window_name, pane:$pane,
+        cwd:$cwd, cmd:$cmd, exit:$exit, duration_s: (($end-$start)*1000|round/1000)}' >> $_tl_file
+    unset _tl_cmd
+  }
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd _tl_precmd
+  add-zsh-hook preexec _tl_preexec
+fi
 
 # >>> boxd completions >>>
 # Managed by `boxd completions --install`; do not edit between markers.

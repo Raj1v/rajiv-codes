@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inbox</title>
+<style>
+  :root { --bg:#fafaf9; --fg:#1c1917; --muted:#78716c; --line:#e7e5e4; --card:#fff; --accent:#4f46e5; --alert:#b91c1c; --warn:#b45309; --chip:#f5f5f4; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#1c1917; --fg:#f5f5f4; --muted:#a8a29e; --line:#292524; --card:#231f1d; --accent:#a5b4fc; --alert:#f87171; --warn:#fbbf24; --chip:#292524; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.4 system-ui,sans-serif; }
+  main { max-width:820px; margin:0 auto; padding:16px 16px 48px; }
+  header { position:sticky; top:0; background:var(--bg); padding:8px 0 10px; display:flex; gap:10px; align-items:center; border-bottom:1px solid var(--line); z-index:1; }
+  header h1 { font-size:16px; margin:0; white-space:nowrap; }
+  header .meta { color:var(--muted); font-size:12px; white-space:nowrap; }
+  input { flex:1; min-width:0; padding:6px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--fg); font:inherit; }
+  details { margin-top:10px; border:1px solid var(--line); border-radius:10px; background:var(--card); }
+  summary { cursor:pointer; padding:8px 12px; display:flex; align-items:center; gap:8px; font-weight:600; list-style:none; }
+  summary::-webkit-details-marker { display:none; }
+  summary::before { content:"▸"; color:var(--muted); font-weight:400; }
+  details[open] summary::before { content:"▾"; }
+  summary .n { color:var(--muted); font-weight:400; }
+  summary .oldest { margin-left:auto; font-weight:400; font-size:12px; }
+  .alerts summary { color:var(--alert); }
+  ul { list-style:none; margin:0; padding:0 8px 6px; }
+  li { display:grid; grid-template-columns:auto 1fr auto; gap:8px; align-items:baseline; padding:5px 6px; border-top:1px solid var(--line); }
+  li:first-child { border-top:none; }
+  .age { font-size:11px; padding:1px 6px; border-radius:6px; background:var(--chip); color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .age.old { color:var(--warn); }
+  .age.stale { color:var(--alert); }
+  .ask { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  li:hover .ask, li:focus-within .ask { white-space:normal; }
+  .where { color:var(--muted); font-size:12px; }
+  a { color:var(--accent); text-decoration:none; font-size:12px; white-space:nowrap; }
+  a:hover { text-decoration:underline; }
+  .zero { padding:32px 0; font-size:18px; }
+  .closed { opacity:.55; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Inbox</h1>
+    <input id="q" type="search" placeholder="filter… (person, word)" autofocus>
+    <span class="meta" id="meta"></span>
+  </header>
+  <div id="app"></div>
+</main>
+<script>
+const days = s => (Date.now() - new Date(s)) / 864e5;
+const ageTxt = s => { const d = days(s); return d < 1 ? `${Math.max(1, Math.round(d * 24))}h` : `${Math.round(d)}d`; };
+const ageCls = s => { const d = days(s); return d >= 5 ? "age stale" : d >= 2 ? "age old" : "age"; };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" })[c]);
+const row = i => `<li><span class="${ageCls(i.since)}">${ageTxt(i.since)}</span>
+  <span class="ask" title="${esc(i.ask)}">${esc(i.ask)} <span class="where">· ${esc(i.where)}</span></span>
+  ${i.link ? `<a href="${esc(i.link)}">open →</a>` : "<span></span>"}</li>`;
+const group = (title, items, open, cls = "") => {
+  const oldest = items.reduce((a, b) => a.since < b.since ? a : b);
+  return `<details class="${cls}" ${open ? "open" : ""}><summary>${esc(title)} <span class="n">${items.length}</span>
+    <span class="oldest ${ageCls(oldest.since)}">oldest ${ageTxt(oldest.since)}</span></summary><ul>${items.map(row).join("")}</ul></details>`;
+};
+let state = null;
+function render() {
+  if (!state) return;
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const hit = i => !q || `${i.who} ${i.ask} ${i.where}`.toLowerCase().includes(q);
+  const open = state.items.filter(i => i.status === "open" && hit(i)).sort((a, b) => a.since.localeCompare(b.since));
+  const alerts = open.filter(i => i.where === "alert");
+  const asks = open.filter(i => i.where !== "alert");
+  const byWho = {};
+  for (const i of asks) (byWho[i.who] ??= []).push(i);
+  const groups = Object.entries(byWho).sort((a, b) => b[1].length - a[1].length || a[1][0].since.localeCompare(b[1][0].since));
+  const snoozed = state.items.filter(i => i.status === "snoozed" && hit(i));
+  const closed = state.items.filter(i => ["done", "dismissed"].includes(i.status) && hit(i)).sort((a, b) => b.since.localeCompare(a.since));
+  document.getElementById("meta").textContent = `${open.length} open · ${new Date(state.last_checked * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+  document.getElementById("app").innerHTML =
+    (alerts.length ? group("Alerts", alerts, true, "alerts") : "") +
+    (groups.length ? groups.map(([w, items], idx) => group(w, items, !!q || idx < 2 || items.length <= 2)).join("") : `<div class="zero">Inbox zero.</div>`) +
+    (snoozed.length ? group("Snoozed", snoozed, false, "closed") : "") +
+    (closed.length ? group("Closed", closed, false, "closed") : "");
+}
+async function load() {
+  try { state = await (await fetch("inbox.json", { cache: "no-store" })).json(); render(); }
+  catch (e) { document.getElementById("meta").textContent = "failed to load inbox.json"; }
+}
+document.getElementById("q").addEventListener("input", render);
+load(); setInterval(load, 60000);
+</script>
+</body>
+</html>
