@@ -1,5 +1,6 @@
 #:schema https://github.com/joshmedeski/sesh/raw/main/sesh.schema.json
 {{- $studyflash := ternary "~/repos/studyflash_monorepo/" "~/studyflash/" (eq .chezmoi.os "darwin") }}
+{{- $pos := ternary "~/life" "~" (eq .chezmoi.os "darwin") }}
 [[session]]
 name = "dotfiles"
 path = "{{ .chezmoi.workingTree }}"
@@ -11,7 +12,7 @@ startup_command = "bin/tmux-inbox.sh"
 
 [[session]]
 name = "TODO / Productivity OS"
-path = "~"
+path = "{{ $pos }}"
 startup_command = "pos"
 
 [[session]]
@@ -27,6 +28,12 @@ startup_command = "claude --dangerously-skip-permissions 'Ticket grooming sessio
 name = "Ticket Triage"
 path = "{{ $studyflash }}"
 startup_command = "git checkout triage-tickets"
+{{- if eq .chezmoi.os "darwin" }}
+
+[[session]]
+name = "homelab"
+path = "~/homelab"
+{{- end }}
 
 [[session]]
 name = "Workflow"
