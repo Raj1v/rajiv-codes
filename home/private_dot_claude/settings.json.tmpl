@@ -1,3 +1,4 @@
+{{- $mac := eq .chezmoi.os "darwin" -}}
 {
   "attribution": {
     "commit": "",
@@ -6,8 +7,9 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "opus",
+  "model": "{{ if $mac }}opus[1m]{{ else }}opus{{ end }}",
   "hooks": {
+{{- if not $mac }}
     "SessionStart": [
       {
         "hooks": [
@@ -18,6 +20,7 @@
         ]
       }
     ],
+{{- end }}
     "Notification": [
       {
         "matcher": "permission_prompt|elicitation_dialog",
@@ -58,7 +61,7 @@
           }
         ]
       }
-    ],
+    ]{{ if not $mac }},
     "SessionEnd": [
       {
         "hooks": [
@@ -68,7 +71,7 @@
           }
         ]
       }
-    ]
+    ]{{ end }}
   },
   "statusLine": {
     "type": "command",
@@ -97,7 +100,10 @@
       }
     }
   },
-  "effortLevel": "medium",
+  "effortLevel": "{{ if $mac }}low{{ else }}medium{{ end }}",
+{{- if $mac }}
+  "fastMode": true,
+{{- end }}
   "tui": "fullscreen",
   "voice": {
     "enabled": true,
@@ -111,8 +117,10 @@
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
   "env": {
+{{- if not $mac }}
     "PLANNOTATOR_REMOTE": "1",
     "PLANNOTATOR_URL_HOST": "100.105.175.39",
+{{- end }}
     "CLAUDE_CODE_SHELL": "{{ if eq .chezmoi.os "darwin" }}/opt/homebrew/bin/bash{{ else }}/home/linuxbrew/.linuxbrew/bin/bash{{ end }}"
   }
 }
