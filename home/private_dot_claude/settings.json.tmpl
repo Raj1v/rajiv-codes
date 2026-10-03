@@ -112,6 +112,7 @@
   "voiceEnabled": true,
   "env": {
     "PLANNOTATOR_REMOTE": "1",
-    "PLANNOTATOR_URL_HOST": "100.105.175.39"
+    "PLANNOTATOR_URL_HOST": "100.105.175.39",
+    "CLAUDE_CODE_SHELL": "{{ if eq .chezmoi.os "darwin" }}/opt/homebrew/bin/bash{{ else }}/home/linuxbrew/.linuxbrew/bin/bash{{ end }}"
   }
 }
