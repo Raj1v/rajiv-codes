@@ -50,6 +50,9 @@ return {
 	initial_rows = 36,
 	font = wezterm.font_with_fallback({ "Hack Nerd Font", "Apple Color Emoji" }),
 	font_size = 18.0,
+	-- Also sets the stroke width of box-drawing glyphs (herdr/tmux pane borders),
+	-- which are hairline-thin with Hack's default metric.
+	underline_thickness = "300%",
 	hide_tab_bar_if_only_one_tab = true,
 	window_decorations = "RESIZE",
 	color_scheme = scheme_for_appearance(),

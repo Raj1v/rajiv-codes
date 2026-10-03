@@ -1,0 +1,33 @@
+onboarding = false
+[theme]
+# "terminal" = use WezTerm's ANSI palette, so herdr always matches
+# WezTerm's Catppuccin Latte/Mocha as macOS switches light/dark.
+name = "terminal"
+[ui]
+agent_panel_sort = "priority"
+
+[keys]
+prefix = "ctrl+f"
+# CMD+T / CMD+W / CMD+[ ] / CMD+1..9 / CMD+Shift+P / CMD+P
+new_workspace = "prefix+c"
+close_workspace = "prefix+shift+x"
+previous_workspace = "prefix+p"
+next_workspace = "prefix+n"
+switch_workspace = "prefix+1..9"
+workspace_picker = "prefix+shift+w"
+goto = "prefix+shift+k"
+rename_workspace = "prefix+comma"
+# tab defaults moved off the keys above
+new_tab = "prefix+t"
+close_tab = "prefix+alt+x"
+previous_tab = "prefix+alt+p"
+next_tab = "prefix+alt+n"
+switch_tab = ""
+# CMD+HJKL / OPT+[ ] / OPT+1..9 (wezterm sends Alt)
+focus_pane_left = "alt+h"
+focus_pane_down = "alt+j"
+focus_pane_up = "alt+k"
+focus_pane_right = "alt+l"
+cycle_pane_previous = "alt+p"
+cycle_pane_next = "alt+n"
+focus_agent = "alt+1..9"

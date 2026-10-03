@@ -1,0 +1,69 @@
+#!/bin/zsh
+# Expose a dedicated, logged-in Chrome on this Mac to remote coding agents over Tailscale (CDP)
+#   agent-chrome          start Chrome (if needed) + tailscale serve TCP forwarder, print endpoint
+#   agent-chrome status   show Chrome + forwarder state
+#   agent-chrome stop     remove the forwarder (Chrome keeps running)
+#   agent-chrome stop --all   also quit the agent Chrome
+#
+# Port 9222 = full control of every account in this profile. Tailscale-only; keep the profile for agent work.
+
+set -euo pipefail
+
+PORT=9222
+PROFILE="$HOME/.chrome-agent"
+CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+ts_ip() { tailscale ip -4 2>/dev/null | head -1; }
+chrome_up() { curl -sf -m 2 "http://127.0.0.1:$PORT/json/version" >/dev/null; }
+serve_up() { tailscale serve status 2>/dev/null | grep -q "tcp://localhost:$PORT"; }
+# Main browser process only, not the "Google Chrome Helper" children
+chrome_pid() { pgrep -f "^$CHROME --remote-debugging-port=$PORT --user-data-dir=$PROFILE"; }
+
+start() {
+  if chrome_up; then
+    echo "Chrome already listening on 127.0.0.1:$PORT"
+  else
+    # Chrome 136+ refuses remote debugging on the default profile, hence the dedicated user-data-dir
+    "$CHROME" --remote-debugging-port=$PORT --user-data-dir="$PROFILE" \
+      --no-first-run --no-default-browser-check >/dev/null 2>&1 &!
+    for _ in {1..50}; do chrome_up && break; sleep 0.2; done
+    chrome_up || { echo "Chrome didn't open port $PORT" >&2; exit 1; }
+    echo "Started agent Chrome (profile $PROFILE)"
+  fi
+
+  # Headful Chrome binds 127.0.0.1 only; tailscale serve forwards tailnet:$PORT -> localhost:$PORT
+  if ! serve_up; then
+    tailscale serve --bg --tcp $PORT "tcp://localhost:$PORT" >/dev/null
+  fi
+
+  local ip; ip=$(ts_ip)
+  echo
+  echo "CDP endpoint:  http://$ip:$PORT   (use the IP, not the MagicDNS name)"
+  echo "  agent-browser --cdp http://$ip:$PORT open https://example.com"
+  echo "  playwright-mcp --cdp-endpoint http://$ip:$PORT"
+}
+
+status() {
+  if chrome_up; then echo "chrome:    up (pid $(chrome_pid))"; else echo "chrome:    down"; fi
+  if serve_up; then echo "forwarder: up -> http://$(ts_ip):$PORT"; else echo "forwarder: down"; fi
+}
+
+stop() {
+  if serve_up; then
+    tailscale serve --tcp $PORT off >/dev/null
+    echo "Forwarder removed"
+  else
+    echo "Forwarder not running"
+  fi
+  if [[ "${1:-}" == "--all" ]]; then
+    local pid; pid=$(chrome_pid)
+    if [[ -n "$pid" ]]; then kill "$pid" && echo "Agent Chrome quit"; else echo "Agent Chrome not running"; fi
+  fi
+}
+
+case "${1:-start}" in
+  start) start ;;
+  status) status ;;
+  stop) shift; stop "$@" ;;
+  *) echo "usage: agent-chrome [start|status|stop [--all]]" >&2; exit 1 ;;
+esac
