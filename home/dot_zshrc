@@ -379,3 +379,11 @@ if [ -n "${ZSH_VERSION:-}" ]; then
   command -v boxd >/dev/null && source <(boxd completions zsh)
 fi
 # <<< boxd completions <<<
+
+# AWS SSO login, prints only the prefilled device-code link (remote box only)
+if [[ $OSTYPE == linux* ]]; then
+  aws-login() {
+    aws sso login --sso-session studyflash --use-device-code --no-browser 2>&1 \
+      | grep --line-buffered -oE 'https://\S+user_code=\S+|Successfully logged in.*'
+  }
+fi
