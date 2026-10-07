@@ -30,6 +30,16 @@ wezterm.on("format-tab-title", function(tab)
 end)
 
 
+local hyperlink_rules = wezterm.default_hyperlink_rules()
+table.insert(hyperlink_rules, {
+	regex = [[\B#(\d+)\b]],
+	format = "https://github.com/studyflash-ai/studyflash/pull/$1",
+})
+table.insert(hyperlink_rules, {
+	regex = [[\bSFD-(\d+)\b]],
+	format = "https://linear.app/studyflash/issue/SFD-$1",
+})
+
 local appearance = wezterm.gui.get_appearance()
 local is_dark = appearance:find("Dark") ~= nil
 
@@ -62,6 +72,7 @@ return {
 		COLORFGBG = is_dark and "15;0" or "0;15",
 	},
 	window_close_confirmation = "NeverPrompt",
+	hyperlink_rules = hyperlink_rules,
 	window_padding = {
 		left = 8,
 		right = 8,
