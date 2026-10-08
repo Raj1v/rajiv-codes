@@ -9,13 +9,3 @@ NEVER use npm. Always use pnpm. No exceptions.
 User-scope MCP servers MUST be defined in `~/.claude.json` under the top-level `mcpServers` key. They do NOT work in `~/.claude/settings.json`. See https://code.claude.com/docs/en/mcp#user-scope
 
 MCP config is managed by chezmoi via `run_onchange_after_configure-claude-mcps.sh.tmpl`. To add/remove an MCP server, edit that script and run `chezmoi apply`. Secrets are sourced from `~/.secrets` at runtime.
-{{- if ne .chezmoi.os "darwin" }}
-
-## Browser automation
-
-Use the `agent-browser` CLI, not Playwright MCP.
-
-- Logged-in sessions: Rajiv's Mac Chrome at `http://100.84.27.10:9222` (always the IP, not the hostname). Only up while he runs `agent-chrome` on the Mac. If unreachable, ask him to start it.
-- Use `agent-browser connect http://100.84.27.10:9222` or `--cdp http://100.84.27.10:9222` per command.
-- Otherwise the default headless browser is fine.
-{{- end }}
