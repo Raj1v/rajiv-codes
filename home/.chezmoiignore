@@ -1,8 +1,10 @@
 {{- if ne .chezmoi.os "darwin" }}
 Library/
 bin/agent-chrome
+bin/agent-ssh
 {{- end }}
 {{- if eq .chezmoi.os "darwin" }}
 bin/code
 bin/notify-send
+.claude/skills/mac-ssh
 {{- end }}

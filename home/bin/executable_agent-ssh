@@ -1,0 +1,25 @@
+#!/bin/zsh
+# Full SSH access from the devbox (sexy-mf) to this Mac over Tailscale, for as long as this runs.
+#   agent-ssh    grant access; Ctrl-C (or closing the terminal) revokes it
+#
+# The devbox key normally only reaches e2e-gate.sh; this prepends an unrestricted line for the
+# same key (sshd uses the first match). expiry-time is a backstop if this dies without cleanup (kill -9).
+
+set -euo pipefail
+
+KEYS="$HOME/.ssh/authorized_keys"
+TAG="agent-ssh-temp"
+DEVBOX_IP="100.105.175.39"
+DEVBOX_KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFYl5vRnavww5MUh8aafJzMLQCx1sv0UH4aQtxcKq4f7"
+
+strip() { grep -v " $TAG\$" "$KEYS" > "$KEYS.tmp" || true; cat "$KEYS.tmp" > "$KEYS"; rm "$KEYS.tmp"; }
+
+strip  # leftover from a hard kill
+{ echo "expiry-time=\"$(date -v+12H +%Y%m%d%H%M)\",from=\"$DEVBOX_IP\" $DEVBOX_KEY $TAG"; cat "$KEYS"; } > "$KEYS.tmp"
+cat "$KEYS.tmp" > "$KEYS"; rm "$KEYS.tmp"
+trap 'strip; echo "\nGrant revoked"' EXIT
+trap 'exit 0' INT TERM HUP
+
+echo "Devbox has full SSH access. Ctrl-C to revoke."
+echo "On the devbox:  ssh $USER@$(tailscale ip -4 | head -1)"
+while true; do sleep 3600; done
