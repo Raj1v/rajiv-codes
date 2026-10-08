@@ -7,5 +7,5 @@ bin/agent-ssh
 bin/code
 bin/notify-send
 .claude/skills/mac-ssh
-.claude/skills/browser
+.claude/skills/mac-browser
 {{- end }}
